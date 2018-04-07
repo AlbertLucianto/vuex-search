@@ -53,9 +53,11 @@ export default class SubscribableSearchApi {
   /**
    * Builds a searchable index of a set of resources.
    *
-   * @param fieldNamesOrIndexFunction This value is passed to reduxSearch() factory during initialization
+   * @param fieldNamesOrIndexFunction This value is passed to
+   *   reduxSearch() factory during initialization
    *   It is either an Array of searchable fields (to be auto-indexed)
-   *   Or a custom index function to be called with a :resources object and an :indexDocument callback
+   *   Or a custom index function to be called with a :resources object
+   *   and an :indexDocument callback
    * @param resourceName Uniquely identifies the resource (eg. "databases")
    * @param resources Map of resource uid to resource (Object)
    * @param state State object to be passed to custom resource-indexing functions

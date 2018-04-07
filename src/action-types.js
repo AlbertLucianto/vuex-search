@@ -1,8 +1,8 @@
-export const RECEIVE_RESULT = '@@vuexSearch/RECEIVE_RESULT';
-export const INITIALIZE_RESOURCES = '@@vuexSearch/INITIALIZE_RESOURCE';
-export const SEARCH = '@@vuexSearch/SEARCH';
+export const RECEIVE_RESULT = '@@vuexSearch/action/RECEIVE_RESULT';
+export const INITIALIZE_RESOURCES = '@@vuexSearch/action/INITIALIZE_RESOURCES';
+export const SEARCH = '@@vuexSearch/action/SEARCH';
 export const searchApi = {
-  INDEX_RESOURCE: '@@vuexSearch/API/INDEX_RESOURCE',
-  DEFINE_INDEX: '@@vuexSearch/API/DEFINE_INDEX',
-  PERFORM_SEARCH: '@@vuexSearch/API/PERFORM_SEARCH',
+  INDEX_RESOURCE: '@@vuexSearch/action/API/INDEX_RESOURCE',
+  DEFINE_INDEX: '@@vuexSearch/action/API/DEFINE_INDEX',
+  PERFORM_SEARCH: '@@vuexSearch/action/API/PERFORM_SEARCH',
 };

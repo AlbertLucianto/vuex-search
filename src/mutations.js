@@ -26,5 +26,6 @@ export default {
 
   [mutationTypes.SET_SEARCH]: (state, { resourceName, searchString }) => {
     Vue.set(state[resourceName], 'text', searchString);
+    Vue.set(state[resourceName], 'isSearching', true);
   },
 };
