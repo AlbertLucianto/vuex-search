@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <button @click="fetchItems">generate</button>
-    <input v-model="searchText" @keydown="searchChange"/>
+    <input v-model="searchText" @keyup="searchChange"/>
     <virtual-scroller class="scroller" :items="searchText ? results : items"
-      item-height="42" v-if="items.length">
+      item-height="50" v-if="items.length">
       <template slot-scope="props">
         <contact-detail
           :key="props.itemKey"
@@ -17,8 +17,8 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
-import { searchGetters, searchActions } from 'vuex-search';
+import { mapGetters, mapActions, mapState } from 'vuex';
+import { searchActions } from 'vuex-search';
 import ContactDetail from './components/ContactDetail';
 
 const RESOURCE_NAME = 'contacts';
@@ -34,24 +34,20 @@ export default {
     ...mapGetters({
       itemsMap: 'currentContacts',
     }),
-    ...mapGetters({
-      searchResultByName: searchGetters.resultByName,
-    }),
     items() {
       return Object.values(this.itemsMap);
     },
+    ...mapState({
+      resultIds: state => state.search[RESOURCE_NAME].result,
+    }),
     results() {
-      return this
-        .searchResultByName(RESOURCE_NAME)
-        .map(id => this.itemsMap[id]);
+      return this.resultIds.map(id => this.itemsMap[id]);
     },
   },
   methods: {
     ...mapActions({
       fetchItems: 'fetchContacts',
-    }),
-    ...mapActions({
-      search: searchActions.search,
+      search: searchActions.SEARCH,
     }),
     searchChange() {
       this.search({
