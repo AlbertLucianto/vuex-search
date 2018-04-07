@@ -9,12 +9,13 @@ export default function vuexSearch({
   resourceGetter,
   searchApi = new SubscribableSearchApi(),
   searchModulePath = 'search',
+  options = {},
 } = {}) {
   return (store) => {
+    const namespace = options.namespace || '';
     const actions = actionsWithSearch(searchApi);
 
     store.registerModule(searchModulePath, {
-      root: true,
       mutations,
       actions,
       getters,
@@ -32,7 +33,7 @@ export default function vuexSearch({
       resourceNames.forEach((resourceName) => {
         store.watch(resourceGetter(resourceName), (data) => {
           const resourceIndex = resourceIndexes[resourceName];
-          const searchString = store.getters[getterNames.resourceIndexByName](resourceName).text;
+          const searchString = store.getters[`${namespace}${getterNames.resourceIndexByName}`](resourceName).text;
 
           store.dispatch(actionTypes.searchApi.INDEX_RESOURCE, {
             fieldNamesOrIndexFunction: resourceIndex,
