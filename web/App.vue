@@ -74,5 +74,7 @@ export default {
 
 .scroller {
   height: 500px;
+  max-width: 500px;
+  width: 100%;
 }
 </style>

@@ -1,8 +1,10 @@
 <template>
-  <div>
-    <div>{{ name }}</div>
-    <div>{{ address }}</div>
-    <div>{{ avatar }}</div>
+  <div class="contactDetail__container">
+    <img :src="avatar" class="contact__avatar"/>
+    <div class="contact__text">
+      <div>{{ name }}</div>
+      <div>{{ address }}</div>
+    </div>
   </div>
 </template>
 
@@ -17,5 +19,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.contactDetail__container {
+  height: 50px;
+  display: flex;
+  .contact__avatar {
+    width: 50px;
+    height: 50px;
+  }
+  .contact__text {
+    text-align: left;
+    padding: 10px;
+  }
+}
 </style>
