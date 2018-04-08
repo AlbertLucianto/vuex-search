@@ -3,7 +3,7 @@
     <button @click="fetchItems">generate</button>
     <input v-model="searchText" @keyup="searchChange"/>
     <virtual-scroller class="scroller" :items="searchText ? results : items"
-      item-height="50" v-if="items.length">
+      item-height="60" v-if="items.length">
       <template slot-scope="props">
         <contact-detail
           :key="props.itemKey"
@@ -38,7 +38,7 @@ export default {
       return Object.values(this.itemsMap);
     },
     ...mapState({
-      resultIds: state => state.search[RESOURCE_NAME].result,
+      resultIds: state => state.searchIndex[RESOURCE_NAME].result,
     }),
     results() {
       return this.resultIds.map(id => this.itemsMap[id]);
@@ -47,7 +47,7 @@ export default {
   methods: {
     ...mapActions({
       fetchItems: 'fetchContacts',
-      search: searchActions.SEARCH,
+      search: `searchIndex/${searchActions.SEARCH}`,
     }),
     searchChange() {
       this.search({
@@ -74,7 +74,7 @@ export default {
 
 .scroller {
   height: 500px;
-  max-width: 500px;
+  max-width: 400px;
   width: 100%;
 }
 </style>

@@ -4,6 +4,20 @@ import getters, { getterNames } from './getters';
 import * as actionTypes from './action-types';
 import SubscribableSearchApi from './SearchApi';
 
+function normalizeNamespaceName(namespace) {
+  if (namespace === '') return '';
+  return namespace.slice(-1) === '/' ? namespace : namespace.concat('/');
+}
+
+function modulePathToNamespace(modulePath) {
+  if (Array.isArray(modulePath)) {
+    return modulePath.join('/').concat('/');
+  } else if (typeof modulePath === 'string') {
+    return normalizeNamespaceName(modulePath);
+  }
+  return JSON.stringify(modulePath);
+}
+
 export default function vuexSearch({
   resourceIndexes = {},
   resourceGetter,
@@ -12,21 +26,32 @@ export default function vuexSearch({
   options = {},
 } = {}) {
   return (store) => {
-    const namespace = options.namespace || '';
+    const { isNamespaced = true } = options;
     const actions = actionsWithSearch(searchApi);
 
     store.registerModule(searchModulePath, {
+      namespaced: isNamespaced,
       mutations,
       actions,
       getters,
       state: {},
     });
 
+    let namespace;
+
+    if (options.namespace !== undefined) {
+      namespace = normalizeNamespaceName(options.namespace);
+    } else {
+      namespace = (isNamespaced ? modulePathToNamespace(searchModulePath) : '');
+    }
+
     const resourceNames = Object.keys(resourceIndexes);
-    store.dispatch(actionTypes.INITIALIZE_RESOURCES, { resourceNames });
+    store.dispatch(`${namespace}${actionTypes.INITIALIZE_RESOURCES}`, { resourceNames });
 
     searchApi.subscribe(({ result, resourceName, text }) => {
-      store.dispatch(actionTypes.RECEIVE_RESULT, { result, resourceName, text });
+      store.dispatch(`${namespace}${actionTypes.RECEIVE_RESULT}`, { result, resourceName, text });
+    }, (error) => {
+      throw error;
     });
 
     if (resourceGetter) {
@@ -35,12 +60,12 @@ export default function vuexSearch({
           const resourceIndex = resourceIndexes[resourceName];
           const searchString = store.getters[`${namespace}${getterNames.resourceIndexByName}`](resourceName).text;
 
-          store.dispatch(actionTypes.searchApi.INDEX_RESOURCE, {
+          store.dispatch(`${namespace}${actionTypes.searchApi.INDEX_RESOURCE}`, {
             fieldNamesOrIndexFunction: resourceIndex,
             resourceName,
             resources: data,
           });
-          store.dispatch(actionTypes.SEARCH, { resourceName, searchString });
+          store.dispatch(`${namespace}${actionTypes.SEARCH}`, { resourceName, searchString });
         });
       });
     }

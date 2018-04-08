@@ -20,8 +20,9 @@ export default {
 
 <style lang="scss" scoped>
 .contactDetail__container {
-  height: 50px;
+  height: 60px;
   display: flex;
+  align-items: center;
   .contact__avatar {
     width: 50px;
     height: 50px;
