@@ -18,10 +18,11 @@
 
 <script>
 import { mapGetters, mapActions, mapState } from 'vuex';
-import { searchActions } from 'vuex-search';
+import { searchActionTypes } from 'vuex-search';
 import ContactDetail from './components/ContactDetail';
 
 const RESOURCE_NAME = 'contacts';
+const SEARCH_MODULE_PATH = 'searchIndex';
 
 export default {
   name: 'App',
@@ -38,7 +39,7 @@ export default {
       return Object.values(this.itemsMap);
     },
     ...mapState({
-      resultIds: state => state.searchIndex[RESOURCE_NAME].result,
+      resultIds: state => state[SEARCH_MODULE_PATH][RESOURCE_NAME].result,
     }),
     results() {
       return this.resultIds.map(id => this.itemsMap[id]);
@@ -47,7 +48,7 @@ export default {
   methods: {
     ...mapActions({
       fetchItems: 'fetchContacts',
-      search: `searchIndex/${searchActions.SEARCH}`,
+      search: `${SEARCH_MODULE_PATH}/${searchActionTypes.SEARCH}`,
     }),
     searchChange() {
       this.search({

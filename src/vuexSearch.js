@@ -4,19 +4,7 @@ import getters, { getterNames } from './getters';
 import * as actionTypes from './action-types';
 import SubscribableSearchApi from './SearchApi';
 
-function normalizeNamespaceName(namespace) {
-  if (namespace === '') return '';
-  return namespace.slice(-1) === '/' ? namespace : namespace.concat('/');
-}
-
-function modulePathToNamespace(modulePath) {
-  if (Array.isArray(modulePath)) {
-    return modulePath.join('/').concat('/');
-  } else if (typeof modulePath === 'string') {
-    return normalizeNamespaceName(modulePath);
-  }
-  return JSON.stringify(modulePath);
-}
+import { normalizeNamespaceName, modulePathToNamespace, resourceGetterWrapper } from './utils';
 
 export default function vuexSearch({
   resourceIndexes = {},
@@ -56,7 +44,9 @@ export default function vuexSearch({
 
     if (resourceGetter) {
       resourceNames.forEach((resourceName) => {
-        store.watch(resourceGetter(resourceName), (data) => {
+        const _resourceGetter = resourceGetterWrapper(resourceName, resourceGetter);
+
+        store.watch(_resourceGetter, (data) => {
           const resourceIndex = resourceIndexes[resourceName];
           const searchString = store.getters[`${namespace}${getterNames.resourceIndexByName}`](resourceName).text;
 

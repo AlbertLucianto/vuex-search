@@ -17,11 +17,19 @@ export default new Vuex.Store({
   actions,
   mutations,
   state,
-  plugins: [vuexSearch({
-    resourceIndexes: {
-      contacts: ['address', 'name'],
-    },
-    resourceGetter: resourceName => store => store.resources[resourceName],
-    searchModulePath: 'searchIndex', // or ['searchIndex']
-  })],
+  plugins: [
+    vuexSearch({
+      resourceIndexes: {
+        contacts: ['address', 'name'],
+      },
+      resourceGetter: (resourceName, store) => store.resources[resourceName],
+      searchModulePath: 'searchIndex', // or ['searchIndex']
+    }),
+    vuexSearch({
+      resourceIndexes: {
+        contacts: ['address', 'name'],
+      },
+      resourceGetter: (resourceName, store) => store.resources[resourceName],
+    }),
+  ],
 });
