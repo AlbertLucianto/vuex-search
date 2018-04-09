@@ -1,5 +1,6 @@
 /** @flow */
 import Search from 'js-worker-search';
+import { cancellablePromiseWrapper } from './utils';
 
 /* eslint-disable no-underscore-dangle */
 
@@ -16,6 +17,7 @@ export default class SubscribableSearchApi {
     this._tokenizePattern = tokenizePattern;
     this._caseSensitive = caseSensitive;
     this._resourceToSearchMap = {};
+    this._currentSearchPromiseMap = {};
 
     // Subscribers
     this._onErrorSubscribers = [];
@@ -107,8 +109,15 @@ export default class SubscribableSearchApi {
    */
   async performSearch(resourceName, text) {
     try {
+      const currentSearch = this._currentSearchPromiseMap[resourceName];
+      if (currentSearch) currentSearch.cancel();
+
       const search = this._resourceToSearchMap[resourceName];
-      const result = await search.search(text);
+      const searchPromise = cancellablePromiseWrapper(search.search(text));
+      this._currentSearchPromiseMap[resourceName] = searchPromise;
+
+      const result = await searchPromise;
+      delete this._currentSearchPromiseMap[resourceName];
 
       this._notifyNext({
         result,
