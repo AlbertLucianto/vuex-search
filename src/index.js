@@ -1,8 +1,10 @@
 import { SEARCH } from './action-types';
 
-export { default } from './vuexSearch';
+export { default } from './vuexSearchPlugin';
 export { getterNames as searchGetters } from './getters';
-export const searchActionTypes = { SEARCH };
+
+export { default as composeSearchActions } from './searchActions';
+export const actionTypes = { SEARCH };
 
 export { default as SearchApi } from './SearchApi';
 export { INDEX_MODES } from 'js-worker-search';
