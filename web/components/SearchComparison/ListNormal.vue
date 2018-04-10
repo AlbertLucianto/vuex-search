@@ -17,12 +17,11 @@
 </template>
 
 <script>
-import { mapGetters, mapActions, mapState } from 'vuex';
-import { searchActionTypes } from 'vuex-search';
+import { mapGetters, mapActions } from 'vuex';
+import { actionTypes, composeSearchActions } from 'vuex-search';
 import ContactDetail from '@/components/ContactDetail';
 
-const RESOURCE_NAME = 'contacts';
-const SEARCH_MODULE_PATH = 'searchIndex';
+const mapSearchActions = composeSearchActions('searchIndex');
 
 export default {
   components: {
@@ -40,23 +39,19 @@ export default {
     items() {
       return Object.values(this.itemsMap);
     },
-    ...mapState({
-      resultIds: state => state[SEARCH_MODULE_PATH][RESOURCE_NAME].result,
-    }),
+    // ...mapState({
+    //   resultIds: state => state[SEARCH_MODULE_PATH][RESOURCE_NAME].result,
+    // }),
     results() {
-      return this.resultIds.map(id => this.itemsMap[id]);
+      // return this.resultIds.map(id => this.itemsMap[id]);
+      return [];
     },
   },
   methods: {
-    ...mapActions({
-      fetchItems: 'fetchContacts',
-      search: `${SEARCH_MODULE_PATH}/${searchActionTypes.SEARCH}`,
-    }),
+    ...mapActions({ fetchItems: 'fetchContacts' }),
+    ...mapSearchActions('contacts', { searchContacts: actionTypes.SEARCH }),
     searchChange() {
-      this.search({
-        resourceName: RESOURCE_NAME,
-        searchString: this.searchText,
-      });
+      this.searchContacts(this.searchText);
     },
   },
 };

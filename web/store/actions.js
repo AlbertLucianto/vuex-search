@@ -2,7 +2,7 @@ import faker from 'faker';
 import * as mutationTypes from './mutation-types';
 
 export default {
-  fetchContacts({ commit }, { quantity = 10000 } = {}) {
+  fetchContacts({ commit }, { quantity = 1000 } = {}) {
     const contacts = {};
 
     new Array(quantity).fill(null).forEach(() => {
