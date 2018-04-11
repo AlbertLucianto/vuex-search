@@ -1,9 +1,10 @@
 {
   "name": "vuex-search",
   "version": "1.0.0",
-  "description": "Vuex binding for client-side search",
-  "author": "Albert",
-  "private": true,
+  "description": "Vuex binding for client-side search with indexers and Web Workers",
+  "author": "Albert Lucianto",
+  "main": "dist/commonjs/index.js",
+  "module": "dist/es/index.js",
   "scripts": {
     "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:web",
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
@@ -20,17 +21,22 @@
     "build:umd": "npm run clean:umd && cross-env NODE_ENV=production webpack --config build/webpack.umd.conf.js --bail",
     "build:web": "node build/build.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlbertLucianto/vuex-search"
+  },
   "keywords": [
     "vue",
     "vuex",
     "search"
   ],
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "bluebird": "^3.5.1",
-    "faker": "^4.1.0",
     "js-worker-search": "^1.2.1",
-    "vue": "^2.5.2",
-    "vue-virtual-scroller": "^0.11.7",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
@@ -65,6 +71,7 @@
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-vue": "^4.0.0",
     "extract-text-webpack-plugin": "^3.0.0",
+    "faker": "^4.1.0",
     "file-loader": "^1.1.11",
     "friendly-errors-webpack-plugin": "^1.6.1",
     "html-webpack-plugin": "^2.30.1",
@@ -86,10 +93,12 @@
     "shelljs": "^0.7.6",
     "uglifyjs-webpack-plugin": "^1.1.1",
     "url-loader": "^0.5.8",
+    "vue": "^2.5.16",
     "vue-jest": "^1.0.2",
     "vue-loader": "^13.3.0",
     "vue-style-loader": "^3.0.1",
     "vue-template-compiler": "^2.5.2",
+    "vue-virtual-scroller": "^0.11.7",
     "webpack": "^3.6.0",
     "webpack-bundle-analyzer": "^2.9.0",
     "webpack-dev-server": "^2.9.1",
