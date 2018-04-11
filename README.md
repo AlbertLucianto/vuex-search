@@ -1,6 +1,6 @@
 # Vuex Search
 
-Vuex Search is a library for searching collections of objects. Search algorithms powered by [js-worker-search](https://github.com/bvaughn/js-worker-search).
+Vuex Search is a plugin for searching collections of objects. Search algorithms powered by [js-worker-search](https://github.com/bvaughn/js-worker-search).
 
 Demo can be found [here]().
 
@@ -15,6 +15,8 @@ npm install --save vuex-search
 ```javascript
 import vuexSearchPlugin from 'vuex-search';
 ```
+
+Considering we have this structure of Vuex state.
 
 ```javascript
 // store/state.js
@@ -37,13 +39,16 @@ export default {
 }
 ```
 
+### Defining Vuex Search plugin
+
+* __resourceIndexes__: Dictionary of `resourceName`s and their corresponding fields to be indexed by.
+* __resourceGetter__: Tells Vuex Search for which state should be watched and reindexed on change.
+* __name__ (optional): Identifier for Vue component to map `getters` and `actions` from Vuex Search's states.
+
 ```javascript
 // store/index.js
 
 const store = new Vuex.Store({
-  getters,
-  actions,
-  mutations,
   state,
   plugins: [
     vuexSearchPlugin({
@@ -57,11 +62,12 @@ const store = new Vuex.Store({
 });
 ```
 
-```javascript
-import { actionTypes, getterTypes, composeSearchMappers } from 'vuex-search';
-```
+### Binding with Vue Component
 
 ```javascript
+import { composeSearchMappers, actionTypes, getterTypes } from 'vuex-search';
+
+// Composing actions and getters from selected plugin name
 const { mapSearchGetters, mapSearchActions } = composeSearchMappers('myIndex');
 ```
 
