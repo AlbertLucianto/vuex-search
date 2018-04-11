@@ -1,11 +1,7 @@
-export const getterNames = {
-  resourceIndexByName: '@@vuexSearch/getter/resourceIndex',
-  isSearchingByName: '@@vuexSearch/getter/isSearching',
-  resultByName: '@@vuexSearch/getter/result',
-};
+import * as getterTypes from './getter-types';
 
 export default {
-  [getterNames.resourceIndexByName]: state => resourceName => state[resourceName],
-  [getterNames.isSearchingByName]: state => resourceName => state[resourceName].isSearching,
-  [getterNames.resultByName]: state => resourceName => state[resourceName].result,
+  [getterTypes.resourceIndexByName]: state => resourceName => state[resourceName],
+  [getterTypes.isSearchingByName]: state => resourceName => state[resourceName].isSearching,
+  [getterTypes.resultByName]: state => resourceName => state[resourceName].result,
 };

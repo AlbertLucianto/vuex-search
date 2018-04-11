@@ -1,6 +1,7 @@
 import actionsWithSearch from './actions';
 import mutations from './mutations';
-import getters, { getterNames } from './getters';
+import getters from './getters';
+import * as getterTypes from './getter-types';
 import * as actionTypes from './action-types';
 import SubscribableSearchApi from './SearchApi';
 
@@ -88,7 +89,7 @@ export default function vuexSearchPlugin({
 
         store.watch(_resourceGetter, (data) => {
           const resourceIndex = resourceIndexes[resourceName];
-          const searchString = store.getters[`${namespace}${getterNames.resourceIndexByName}`](resourceName).text;
+          const searchString = store.getters[`${namespace}${getterTypes.resourceIndexByName}`](resourceName).text;
 
           store.dispatch(`${namespace}${actionTypes.searchApi.INDEX_RESOURCE}`, {
             fieldNamesOrIndexFunction: resourceIndex,
