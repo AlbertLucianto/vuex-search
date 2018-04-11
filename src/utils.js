@@ -31,7 +31,7 @@ export function modulePathToNamespace(modulePath) {
  * @param {(resourceName: string, store: Store) => State)} resourceGetter
  */
 export function resourceGetterWrapper(resourceName, resourceGetter) {
-  return store => resourceGetter(resourceName, store);
+  return state => resourceGetter(resourceName, state);
 }
 
 /**

@@ -6,7 +6,7 @@ export * from './SearchApi';
 
 export interface VuexSearchOptions<S> {
   resourceIndexes: { [resourceName: string]: string[] };
-  resourceGetter: (resourceName: string, store: Store<S>) => any;
+  resourceGetter: (resourceName: string, state: S) => any;
   searchApi: SearchApi;
   name?: string;
 }

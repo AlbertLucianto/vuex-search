@@ -8,7 +8,7 @@ import mutations from './mutations';
 
 Vue.use(Vuex);
 
-const state = {
+const initialState = {
   resources: { contacts: [] },
 };
 
@@ -16,13 +16,13 @@ export default new Vuex.Store({
   getters,
   actions,
   mutations,
-  state,
+  state: initialState,
   plugins: [
     vuexSearchPlugin({
       resourceIndexes: {
         contacts: ['address', 'name'],
       },
-      resourceGetter: (resourceName, store) => store.state.resources[resourceName],
+      resourceGetter: (resourceName, state) => state.resources[resourceName],
     }),
   ],
 });
