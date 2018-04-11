@@ -1,30 +1,89 @@
-# vuex-search
+# Vuex Search
 
-> Vuex binding for client-side search
+Vuex Search is a library for searching collections of objects. Search algorithms powered by [js-worker-search](https://github.com/bvaughn/js-worker-search).
 
-## Build Setup
+Demo can be found [here]().
 
-``` bash
-# install dependencies
-npm install
+Installation:
 
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
-
-# run unit tests
-npm run unit
-
-# run e2e tests
-npm run e2e
-
-# run all tests
-npm test
+```bash
+npm install --save vuex-search
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+## Examples
+
+```javascript
+import vuexSearchPlugin from 'vuex-search';
+```
+
+```javascript
+// store/state.js
+
+export default {
+  myResources: {
+    contacts: [
+      {
+        id: '1',
+        address: '06176 Georgiana Points',
+        name: 'Dr. Katrina Stehr',
+      },
+      {
+        id: '2',
+        address: '06176 Georgiana Points',
+        name: 'Edyth Grimes',
+      },
+    ],
+  },
+}
+```
+
+```javascript
+// store/index.js
+
+const store = new Vuex.Store({
+  getters,
+  actions,
+  mutations,
+  state,
+  plugins: [
+    vuexSearchPlugin({
+      name: 'myIndex',
+      resourceIndexes: {
+        contacts: ['address', 'name'],
+      },
+      resourceGetter: (resourceName, store) => store.myResources[resourceName],
+    }),
+  ],
+});
+```
+
+```javascript
+import { actionTypes, getterTypes, composeSearchMappers } from 'vuex-search';
+```
+
+```javascript
+const { mapSearchGetters, mapSearchActions } = composeSearchMappers('myIndex');
+```
+
+```javascript
+// SomeComponent.vue
+
+data() {
+  return { text: '' },
+},
+computed: {
+  ...mapSearchGetters('contacts', {
+    resultIds: getterTypes.result,
+    isLoading: getterTypes.isSearching,
+  }),
+},
+
+methods: {
+  ...mapSearchActions('contacts', {
+    searchContacts: actionTypes.search,
+  }),
+  doSearch() {
+    this.searchContacts(this.text);
+  },
+},
+```
