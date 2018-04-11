@@ -16,7 +16,7 @@ npm install --save vuex-search
 import vuexSearchPlugin from 'vuex-search';
 ```
 
-Considering we have this structure of Vuex state.
+Considering we have this structure of Vuex state. A unique `id` is required in each record.
 
 ```javascript
 // store/state.js

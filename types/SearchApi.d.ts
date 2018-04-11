@@ -1,9 +1,9 @@
-export declare class SearchApi {
+export declare class SearchApi<R extends Resource> {
   constructor(options: SearchApiOptions);
 
   subscribe(onNext: (searchResult: SearchResult) => any, onError: (message: any) => any): () => void;
-  indexResource: (options: IndexResourceOptions) => void;
-  async performSearch: (resourceName: string, text: string) => void;
+  indexResource: (options: IndexResourceOptions<R>) => void;
+  performSearch: (resourceName: string, text: string) => void;
 }
 
 export declare enum INDEX_MODES {
@@ -30,8 +30,8 @@ export interface IndexResourceOptions<R extends Resource> {
   state?: any;
 }
 
-export type IndexFunction<R> = (arg: IndexFunctionOptions<R>) => any;
-export interface IndexFunctionOptions<R> {
+export type IndexFunction<R extends Resource> = (arg: IndexFunctionOptions<R>) => any;
+export interface IndexFunctionOptions<R extends Resource> {
   indexDocument: (uid: string, text: string) => void;
   resources: Resources<R>;
   state: any;
