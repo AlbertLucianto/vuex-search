@@ -46,10 +46,10 @@ function transformActions(resourceName, actionMap) {
 /**
  * A 'mapActions' composer based on vuexSearchPlugin name
  */
-export default name => (
+export default name => function mapSearchActions(
   resourceName,
   map,
-) => {
+) {
   const transformed = (
     namespace,
     _map,

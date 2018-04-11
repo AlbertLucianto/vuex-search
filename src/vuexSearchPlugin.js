@@ -10,7 +10,7 @@ import { resourceGetterWrapper } from './utils';
 /**
  * Declared here to achieve encapsulation
  */
-const _configs = {
+const _defaultConfigs = {
   moduleBaseName: 'vuexSearch',
   defaultName: 'default',
   namespaced: true,
@@ -25,7 +25,7 @@ function initVuexSearch(store) {
   const {
     moduleBaseName,
     namespaced,
-  } = _configs;
+  } = _defaultConfigs;
 
   store.registerModule(moduleBaseName, { state: {}, namespaced });
 }
@@ -45,22 +45,20 @@ export default function vuexSearchPlugin({
   resourceIndexes = {},
   resourceGetter,
   searchApi = new SubscribableSearchApi(),
-  name = _configs.defaultName,
-  options = {},
+  name = _defaultConfigs.defaultName,
 } = {}) {
   return (store) => {
-    const { namespaced = true } = options;
     const actions = actionsWithSearch(searchApi);
 
-    const searchModulePath = [_configs.moduleBaseName, name];
+    const searchModulePath = [_defaultConfigs.moduleBaseName, name];
 
-    if (!store.state[_configs.moduleBaseName]) {
+    if (!store.state[_defaultConfigs.moduleBaseName]) {
       initVuexSearch(store);
-      vuexSearchPlugin._getNamespace = store._modules.getNamespace.bind(store._modules);
+      vuexSearchPlugin._modules = store._modules;
     }
 
     store.registerModule(searchModulePath, {
-      namespaced,
+      namespaced: true,
       mutations,
       actions,
       getters,
@@ -68,11 +66,11 @@ export default function vuexSearchPlugin({
     });
 
     if (!vuexSearchPlugin.instantiated) {
-      Object.freeze(_configs);
+      Object.freeze(_defaultConfigs);
       vuexSearchPlugin.instantiated = true;
     }
 
-    const namespace = vuexSearchPlugin._getNamespace(searchModulePath);
+    const namespace = vuexSearchPlugin._modules.getNamespace(searchModulePath);
 
     const resourceNames = Object.keys(resourceIndexes);
     store.dispatch(`${namespace}${actionTypes.INITIALIZE_RESOURCES}`, { resourceNames });
@@ -104,37 +102,8 @@ export default function vuexSearchPlugin({
 }
 
 /**
- * Configure VuexSearch Plugin before plugin creation.
- *
- * @param {string} moduleBaseName Defining vuex search module name in store (default: 'vuexSearch')
- * @param {boolean} namespaced Should this plugin namespaced in store (default: true)
- * @param {string} defaultName Unless 'name' is provided, index will use 'defaultName'
- *   config as submodule name
- */
-vuexSearchPlugin.configure = (options) => {
-  if (vuexSearchPlugin.instantiated) {
-    const msg = `
-      [Vuex Search] Can't set configuration once a plugin is created.
-      It must be set before plugin creation.
-    `;
-    console.error(msg); // eslint-disable-line
-    return;
-  }
-
-  const configurables = Object.keys(_configs);
-
-  Object.entries(options).forEach(([key, value]) => {
-    if (configurables.includes(key)) {
-      _configs[key] = value;
-    } else {
-      console.error(`[Vuex Search] Unknown configuration '${key}'`); // eslint-disable-line
-    }
-  });
-};
-
-/**
  * Making gettable only property (unsettable).
  */
 Object.defineProperty(vuexSearchPlugin, 'configs', {
-  get() { return _configs; },
+  get() { return _defaultConfigs; },
 });

@@ -15,10 +15,10 @@ function transformMapGetters(resourceName) {
   };
 }
 
-export default name => (
+export default name => function mapSearchGetters(
   resourceName,
   map,
-) => {
+) {
   const transformed = (
     namespace,
     _map,
