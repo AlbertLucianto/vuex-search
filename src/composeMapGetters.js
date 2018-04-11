@@ -1,23 +1,28 @@
 import { mapGetters } from 'vuex';
 import { normalizeNamespace } from './helpers';
 
-function transformGetters(resourceName) {
-  return (getters) => {
-    const transformedGetters = {};
+function transformMapGetters(resourceName) {
+  return (mappedGetters) => {
+    const transformedMapGetters = {};
 
-    Object.entries(getters).forEach(([getterType, getter]) => {
-      transformedGetters[getterType] = function transformedGetter() {
+    Object.entries(mappedGetters).forEach(([getterType, getter]) => {
+      transformedMapGetters[getterType] = function transformedGetter() {
         return getter.apply(this)(resourceName);
       };
     });
 
-    return transformedGetters;
+    return transformedMapGetters;
   };
 }
 
 export default name => (
   resourceName,
   map,
-) => normalizeNamespace(
-  (namespace, _map) => transformGetters(resourceName)(mapGetters(namespace, _map)),
-)(name, map);
+) => {
+  const transformed = (
+    namespace,
+    _map,
+  ) => transformMapGetters(resourceName)(mapGetters(namespace, _map));
+
+  return normalizeNamespace(transformed)(name, map);
+};

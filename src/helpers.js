@@ -25,14 +25,10 @@ export function normalizeNamespace(fn) {
   return (name, map) => {
     const { defaultName, moduleBaseName } = vuexSearchPlugin.configs;
 
-    let namespace;
-    let _map = map;
-    if (typeof name !== 'string') {
-      _map = name;
-      namespace = `${moduleBaseName}/${defaultName}`;
-    } else {
-      namespace = `${moduleBaseName}/${name}`;
-    }
+    const _name = name || defaultName;
+    const _map = map;
+
+    const namespace = `${moduleBaseName}/${_name}`;
 
     return fn(namespace, _map);
   };

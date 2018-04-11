@@ -23,7 +23,6 @@ export default new Vuex.Store({
         contacts: ['address', 'name'],
       },
       resourceGetter: (resourceName, store) => store.resources[resourceName],
-      name: 'searchIndex',
     }),
   ],
 });

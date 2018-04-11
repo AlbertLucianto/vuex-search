@@ -21,7 +21,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { actionTypes, getterTypes, composeSearchMappers } from 'vuex-search';
 import ContactDetail from '@/components/ContactDetail';
 
-const { mapSearchActions, mapSearchGetters } = composeSearchMappers('searchIndex');
+const { mapSearchActions, mapSearchGetters } = composeSearchMappers();
 
 export default {
   components: {

@@ -21,16 +21,16 @@ import * as actionTypes from './action-types';
  *   Vuex's mapActions() does not have the actual actionType
  */
 function transformActions(resourceName, actionMap) {
-  return (actions) => {
+  return (mappedActions) => {
     const transformedActions = {};
 
-    Object.entries(actions).forEach(([actionName, method]) => {
+    Object.entries(mappedActions).forEach(([actionName, method]) => {
       let action = method;
 
       switch (actionMap[actionName]) {
         case actionTypes.SEARCH:
           action = function transformedAction(text) {
-            method.bind(this)({ resourceName, searchString: text });
+            return method.bind(this)({ resourceName, searchString: text });
           };
           break;
         default:
@@ -49,15 +49,19 @@ function transformActions(resourceName, actionMap) {
 export default name => (
   resourceName,
   map,
-) => normalizeNamespace(
-  (namespace, _map) => {
+) => {
+  const transformed = (
+    namespace,
+    _map,
+  ) => {
     // This is required for transformActions to recognise the 'actionType'.
     // Before that, it needs to ensure the map is not an array.
     const actionMap = {};
     normalizeMap(map).forEach(({ key, val }) => {
       actionMap[key] = val;
     });
-
     return transformActions(resourceName, actionMap)(mapActions(namespace, _map));
-  },
-)(name, map);
+  };
+
+  return normalizeNamespace(transformed)(name, map);
+};
