@@ -5,6 +5,7 @@
   "author": "Albert Lucianto",
   "main": "dist/commonjs/index.js",
   "module": "dist/es/index.js",
+  "typings": "types/index.d.ts",
   "scripts": {
     "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:web",
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
@@ -32,11 +33,13 @@
   ],
   "license": "MIT",
   "files": [
-    "dist"
+    "dist",
+    "types"
   ],
   "dependencies": {
     "bluebird": "^3.5.1",
     "js-worker-search": "^1.2.1",
+    "typescript": "^2.8.1",
     "vuex": "^3.0.1"
   },
   "devDependencies": {

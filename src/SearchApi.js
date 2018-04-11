@@ -5,7 +5,7 @@ import { cancellablePromiseWrapper } from './utils';
 /* eslint-disable no-underscore-dangle */
 
 /**
- * Observable that manages communication between redux-search middleware and the Search utility.
+ * Observable that manages communication between vuex-search middleware and the Search utility.
  * This class maps resource names to search indicies and manages subscribers.
  */
 export default class SubscribableSearchApi {
@@ -39,8 +39,8 @@ export default class SubscribableSearchApi {
    * Just invoke the function without any parameters to unsubscribe.
    */
   subscribe(onNext, onError) {
-    this._onNextSubscribers.push(onNext);
-    this._onErrorSubscribers.push(onError);
+    if (onNext) this._onNextSubscribers.push(onNext);
+    if (onError) this._onErrorSubscribers.push(onError);
 
     return function dispose() {
       this._onNextSubscribers = this._onNextSubscribers.filter(
@@ -56,7 +56,7 @@ export default class SubscribableSearchApi {
    * Builds a searchable index of a set of resources.
    *
    * @param fieldNamesOrIndexFunction This value is passed to
-   *   reduxSearch() factory during initialization
+   *   vuexSearchPlugin() factory during initialization
    *   It is either an Array of searchable fields (to be auto-indexed)
    *   Or a custom index function to be called with a :resources object
    *   and an :indexDocument callback
