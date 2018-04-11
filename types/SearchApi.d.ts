@@ -1,8 +1,8 @@
-export declare class SearchApi<R extends Resource> {
+export declare class SearchApi {
   constructor(options: SearchApiOptions);
 
   subscribe(onNext: (searchResult: SearchResult) => any, onError: (message: any) => any): () => void;
-  indexResource: (options: IndexResourceOptions<R>) => void;
+  indexResource<R extends Resource>(options: IndexResourceOptions<R>): void;
   performSearch: (resourceName: string, text: string) => void;
 }
 

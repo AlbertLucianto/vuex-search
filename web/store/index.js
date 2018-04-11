@@ -22,7 +22,7 @@ export default new Vuex.Store({
       resourceIndexes: {
         contacts: ['address', 'name'],
       },
-      resourceGetter: (resourceName, store) => store.resources[resourceName],
+      resourceGetter: (resourceName, store) => store.state.resources[resourceName],
     }),
   ],
 });
