@@ -85,6 +85,12 @@ export default function vuexSearchPlugin({
       resourceNames.forEach((resourceName) => {
         const _resourceGetter = resourceGetterWrapper(resourceName, resourceGetter);
 
+        store.dispatch(`${namespace}${actionTypes.searchApi.INDEX_RESOURCE}`, {
+          fieldNamesOrIndexFunction: resourceIndexes[resourceName],
+          resourceName,
+          resources: _resourceGetter(store.state),
+        });
+
         store.watch(_resourceGetter, (data) => {
           const resourceIndex = resourceIndexes[resourceName];
           const searchString = store.getters[`${namespace}${getterTypes.resourceIndexByName}`](resourceName).text;

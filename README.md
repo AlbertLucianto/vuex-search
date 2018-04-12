@@ -56,7 +56,7 @@ const store = new Vuex.Store({
       resourceIndexes: {
         contacts: ['address', 'name'],
       },
-      resourceGetter: (resourceName, store) => store.myResources[resourceName],
+      resourceGetter: (resourceName, state) => state.myResources[resourceName],
     }),
   ],
 });
