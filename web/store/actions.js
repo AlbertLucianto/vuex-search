@@ -1,14 +1,14 @@
 import faker from 'faker';
 import * as mutationTypes from './mutation-types';
 
+// eslint-disable-next-line
+const GenerateDataWorker = require('worker-loader?inline=true!../worker/generate-data.js');
 let currWorker;
 
 export default {
   fetchContacts({ commit }, { quantity = 1000 } = {}) {
     if (currWorker instanceof Worker) currWorker.terminate();
 
-    // eslint-disable-next-line
-    const GenerateDataWorker = require('worker-loader?inline=true!../worker/generate-data.js');
     const gdWorker = new GenerateDataWorker();
     currWorker = gdWorker;
 
@@ -23,7 +23,7 @@ export default {
       });
 
       gdWorker.onmessage = (e) => {
-        const { contacts } = e.data;
+        const contacts = e.data;
         commit(mutationTypes.SET_CONTACTS, { contacts });
       };
     } else {

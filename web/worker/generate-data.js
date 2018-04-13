@@ -14,7 +14,7 @@ self.addEventListener(
 
     new Array(quantity).fill(null).forEach(() => {
       const id = faker.random.uuid();
-      const result = {};
+      const result = { id };
 
       Object.entries(getData).forEach(([field, fnPath]) => {
         result[field] = execFromPath(faker, fnPath);
@@ -23,7 +23,7 @@ self.addEventListener(
       results[id] = result;
     });
 
-    self.postMessage({ contacts: results });
+    self.postMessage(results);
   },
   false,
 );
