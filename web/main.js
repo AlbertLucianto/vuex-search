@@ -7,7 +7,6 @@ import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 import App from './App';
 import store from './store';
 import TextHighlighter from './components/TextHighlighter';
-import './worker/WorkerConsole';
 
 Vue.config.productionTip = false;
 Vue.use(VueVirtualScroller);

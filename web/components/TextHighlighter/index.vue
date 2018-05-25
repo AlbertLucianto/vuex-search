@@ -39,7 +39,7 @@ export default {
 
 <style lang="scss" scoped>
 .text__highlight {
-  background: aqua;
+  background: rgb(255, 204, 0);
   border-radius: 3px;
 }
 </style>

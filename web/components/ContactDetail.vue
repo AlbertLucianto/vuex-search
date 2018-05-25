@@ -5,13 +5,13 @@
     </div>
     <div class="contact__text">
       <div class="contact__name">
-        <text-highlighter :queries="search.split(/\s+/)">{{ name }}</text-highlighter>
+        <text-highlighter :queries="queries">{{ name }}</text-highlighter>
       </div>
       <div>
-        <text-highlighter :queries="search.split(/\s+/)">{{ address }}</text-highlighter>
+        <text-highlighter :queries="queries">{{ address }}</text-highlighter>
       </div>
       <div class="contact__words">
-        <text-highlighter :queries="search.split(/\s+/)">{{ words }}</text-highlighter>
+        <text-highlighter :queries="queries">{{ words }}</text-highlighter>
       </div>
     </div>
   </div>
@@ -25,6 +25,11 @@ export default {
     avatar: String,
     words: String,
     search: String,
+  },
+  computed: {
+    queries() {
+      return this.search.split(/\s+/);
+    },
   },
 };
 </script>
@@ -53,6 +58,7 @@ export default {
   }
   .contact__name {
     font-weight: 600;
+    color: #42b983;
   }
   .contact__text {
     text-align: left;
