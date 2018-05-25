@@ -3,15 +3,9 @@ import * as mutationTypes from './mutation-types';
 
 // eslint-disable-next-line
 const GenerateDataWorker = require('worker-loader?inline=true!../worker/generate-data.js');
-let currWorker;
-
+const gdWorker = Worker ? new GenerateDataWorker() : null;
 export default {
   fetchContacts({ commit }, { quantity = 1000 } = {}) {
-    if (currWorker instanceof Worker) currWorker.terminate();
-
-    const gdWorker = new GenerateDataWorker();
-    currWorker = gdWorker;
-
     if (gdWorker) {
       gdWorker.postMessage({
         quantity,
@@ -19,6 +13,7 @@ export default {
           name: ['name', 'findName'],
           address: ['address', 'streetAddress'],
           avatar: ['image', 'avatar'],
+          words: { path: ['random', 'words'], args: [10] },
         },
       });
 

@@ -3,13 +3,15 @@
     <button @click="fetchItems">generate</button>
     <input v-model="searchText" @keyup="searchChange"/>
     <virtual-scroller class="scroller" :items="searchText ? results : items"
-      item-height="70" v-if="items.length">
+      item-height="135" v-if="items.length">
       <template slot-scope="props">
         <contact-detail
           :key="props.itemKey"
           :name="props.item.name"
           :address="props.item.address"
-          :avatar="props.item.avatar">
+          :words="props.item.words"
+          :avatar="props.item.avatar"
+          :search="searchText">
         </contact-detail>
       </template>
     </virtual-scroller>
@@ -18,10 +20,10 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { actionTypes, composeSearchActions } from 'vuex-search';
+import { actionTypes, getterTypes, composeSearchMappers } from 'vuex-search';
 import ContactDetail from '@/components/ContactDetail';
 
-const mapSearchActions = composeSearchActions('searchIndex');
+const { mapSearchActions, mapSearchGetters } = composeSearchMappers();
 
 export default {
   components: {
@@ -39,17 +41,14 @@ export default {
     items() {
       return Object.values(this.itemsMap);
     },
-    // ...mapState({
-    //   resultIds: state => state[SEARCH_MODULE_PATH][RESOURCE_NAME].result,
-    // }),
+    ...mapSearchGetters('contacts', { resultIds: getterTypes.result }),
     results() {
-      // return this.resultIds.map(id => this.itemsMap[id]);
-      return [];
+      return this.resultIds.map(id => this.itemsMap[id]);
     },
   },
   methods: {
     ...mapActions({ fetchItems: 'fetchContacts' }),
-    ...mapSearchActions('contacts', { searchContacts: actionTypes.SEARCH }),
+    ...mapSearchActions('contacts', { searchContacts: actionTypes.search }),
     searchChange() {
       this.searchContacts(this.searchText);
     },
@@ -59,10 +58,13 @@ export default {
 
 <style lang="scss" scoped>
 .listVuexSearch {
-  width: 400px;
+  width: 450px;
+  background-color: #FBFBFB;
   .scroller {
     height: 500px;
     width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
   }
 }
 </style>

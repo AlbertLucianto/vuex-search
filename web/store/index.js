@@ -20,7 +20,7 @@ export default new Vuex.Store({
   plugins: [
     vuexSearchPlugin({
       resourceIndexes: {
-        contacts: ['address', 'name'],
+        contacts: ['address', 'name', 'words'],
       },
       resourceGetter: (resourceName, state) => state.resources[resourceName],
     }),

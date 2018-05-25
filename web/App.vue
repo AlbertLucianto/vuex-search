@@ -1,16 +1,16 @@
 <template>
   <div id="app">
-    <search-comparison></search-comparison>
+    <list-contacts></list-contacts>
   </div>
 </template>
 
 <script>
-import SearchComparison from '@/components/SearchComparison';
+import ListContacts from '@/components/ListContacts';
 
 export default {
   name: 'App',
   components: {
-    SearchComparison,
+    ListContacts,
   },
 };
 </script>
