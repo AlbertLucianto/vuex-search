@@ -16,10 +16,12 @@ export default {
           words: { path: ['random', 'words'], args: [10] },
         },
       });
+      commit(mutationTypes.SET_GENERATING, { generating: true });
 
       gdWorker.onmessage = (e) => {
         const contacts = e.data;
         commit(mutationTypes.SET_CONTACTS, { contacts });
+        commit(mutationTypes.SET_GENERATING, { generating: false });
       };
     } else {
       const contacts = {};
@@ -31,6 +33,7 @@ export default {
           name: faker.name.findName(),
           address: faker.address.streetAddress(),
           avatar: faker.image.avatar(),
+          words: faker.random.words(10),
         };
       });
 

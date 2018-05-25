@@ -9,7 +9,7 @@ import mutations from './mutations';
 Vue.use(Vuex);
 
 const initialState = {
-  resources: { contacts: [] },
+  resources: { contacts: [], generating: false },
 };
 
 export default new Vuex.Store({

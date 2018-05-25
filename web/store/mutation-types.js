@@ -1,2 +1,3 @@
 export const SET_CONTACTS = 'SET_CONTACTS';
 export const REMOVE_CONTACT = 'REMOVE_CONTACT';
+export const SET_GENERATING = 'SET_GENERATING';
