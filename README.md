@@ -2,7 +2,7 @@
 
 Vuex Search is a plugin for searching collections of objects. Search algorithms powered by [js-worker-search](https://github.com/bvaughn/js-worker-search).
 
-Demo can be found [here]().
+Demo can be found [here](https://albertlucianto.github.io/vuex-search).
 
 Installation:
 
