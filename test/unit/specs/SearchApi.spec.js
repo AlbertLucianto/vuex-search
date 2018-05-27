@@ -18,8 +18,8 @@ function getSearchApi({ indexMode, tokenizePattern, caseSensitive } = {}) {
   return searchApi;
 }
 
-describe('SearchApi performSearch method', () => {
-  test('SearchApi should return documents ids for any searchable field matching a query', async (done) => {
+describe('SearchApi', () => {
+  test('performSearch: should return documents ids for any searchable field matching a query', async (done) => {
     const searchApi = getSearchApi();
     const ids = await searchApi.performSearch('documents', 'One');
     expect(ids.length).toEqual(1);
@@ -27,7 +27,7 @@ describe('SearchApi performSearch method', () => {
     done();
   });
 
-  test('SearchApi should pass through the correct :indexMode for ALL_SUBSTRINGS', async (done) => {
+  test('performSearch: should pass through the correct :indexMode for ALL_SUBSTRINGS', async (done) => {
     const searchApi = getSearchApi({ indexMode: INDEX_MODES.ALL_SUBSTRINGS });
 
     const matches = await searchApi.performSearch('documents', 'econ');
@@ -40,7 +40,7 @@ describe('SearchApi performSearch method', () => {
     done();
   });
 
-  test('SearchApi should pass through the correct :indexMode for PREFIXES', async (done) => {
+  test('performSearch: should pass through the correct :indexMode for PREFIXES', async (done) => {
     const searchApi = getSearchApi({ indexMode: INDEX_MODES.PREFIXES });
 
     const matches = await searchApi.performSearch('documents', 'Thre');
@@ -53,7 +53,7 @@ describe('SearchApi performSearch method', () => {
     done();
   });
 
-  test('SearchApi should pass through the correct :indexMode for EXACT_WORDS', async (done) => {
+  test('performSearch: should pass through the correct :indexMode for EXACT_WORDS', async (done) => {
     const searchApi = getSearchApi({ indexMode: INDEX_MODES.EXACT_WORDS });
 
     const matches = await searchApi.performSearch('documents', 'One');
@@ -66,7 +66,7 @@ describe('SearchApi performSearch method', () => {
     done();
   });
 
-  test('SearchApi should pass through the correct :tokenizePattern', async (done) => {
+  test('performSearch: should pass through the correct :tokenizePattern', async (done) => {
     const searchApi = getSearchApi({
       tokenizePattern: /[^a-z0-9]+/,
     });
@@ -78,7 +78,7 @@ describe('SearchApi performSearch method', () => {
     done();
   });
 
-  test('SearchApi should pass through the correct :caseSensitive bit', async (done) => {
+  test('performSearch: should pass through the correct :caseSensitive bit', async (done) => {
     const searchApi = getSearchApi({
       caseSensitive: true,
     });
@@ -92,10 +92,8 @@ describe('SearchApi performSearch method', () => {
 
     done();
   });
-});
 
-describe('SearchApi subscribe method', () => {
-  test('SearchApi should notify subscribers for search result', async (done) => {
+  test('subscribe: notify subscribers for search result', async (done) => {
     const searchApi = getSearchApi();
 
     const nextCb = jest.fn();
@@ -116,7 +114,7 @@ describe('SearchApi subscribe method', () => {
     done();
   });
 
-  test('SearchApi should notify subscribers for search error and throw error', async (done) => {
+  test('subscribe: notify subscribers for search error and throw error', async (done) => {
     const searchApi = getSearchApi();
 
     const nextCb = jest.fn();
