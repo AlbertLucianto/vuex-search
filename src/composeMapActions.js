@@ -21,11 +21,11 @@ import * as actionTypes from './action-types';
  * @param {object} actionMap User defined action mappings, it is required since
  *   Vuex's mapActions() does not have the actual actionType
  */
-function transformMethods(resourceName, actionMap) {
-  return (mappedActions) => {
+export function transformMethods(resourceName, actionMap) {
+  return (methodMap) => {
     const transformedMethods = {};
 
-    Object.entries(mappedActions).forEach(([actionName, method]) => {
+    Object.entries(methodMap).forEach(([actionName, method]) => {
       let action = method;
 
       switch (actionMap[actionName]) {
@@ -47,7 +47,10 @@ function transformMethods(resourceName, actionMap) {
 /**
  * A 'mapActions' composer based on vuexSearchPlugin name
  */
-export default function composeMapActions(pluginName) {
+export default function composeMapActions(
+  pluginName = defaultConfigs.defaultName,
+  baseName = defaultConfigs.moduleBaseName,
+) {
   return (resourceName, map) => {
     // This is required for transformMethods to recognise the 'actionType'.
     // Before that, it needs to ensure the map is not an array.
@@ -57,8 +60,8 @@ export default function composeMapActions(pluginName) {
     });
 
     const namespace = modulePathToNamespace([
-      defaultConfigs.moduleBaseName,
-      pluginName || defaultConfigs.defaultName,
+      baseName,
+      pluginName,
     ]);
 
     const methodMap = mapActions(namespace, map);

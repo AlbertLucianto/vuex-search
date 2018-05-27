@@ -2,7 +2,7 @@ import { mapGetters } from 'vuex';
 import defaultConfigs from './defaultConfigs';
 import { modulePathToNamespace } from './utils';
 
-function transformComputed(resourceName) {
+export function transformComputed(resourceName) {
   return (mappedGetters) => {
     const transformedComputed = {};
 

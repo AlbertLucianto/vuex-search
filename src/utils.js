@@ -30,11 +30,11 @@ export function normalizeNamespaceName(namespace) {
  */
 export function modulePathToNamespace(modulePath) {
   if (Array.isArray(modulePath)) {
-    return modulePath.join('/').concat('/');
+    return modulePath.reduce((ns, path) => (path ? `${ns}${path}/` : ns), '');
   } else if (typeof modulePath === 'string') {
     return normalizeNamespaceName(modulePath);
   }
-  return JSON.stringify(modulePath);
+  return normalizeNamespaceName(JSON.stringify(modulePath));
 }
 
 /**
