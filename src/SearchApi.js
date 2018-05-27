@@ -42,7 +42,8 @@ export default class SubscribableSearchApi {
     if (onNext) this._onNextSubscribers.push(onNext);
     if (onError) this._onErrorSubscribers.push(onError);
 
-    return function dispose() {
+    // Return dispose function
+    return () => {
       this._onNextSubscribers = this._onNextSubscribers.filter(
         subscriber => subscriber !== onNext,
       );

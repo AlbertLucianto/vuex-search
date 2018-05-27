@@ -43,9 +43,12 @@ export function resourceGetterWrapper(resourceName, resourceGetter) {
 export function cancellablePromiseWrapper(promise) {
   CancellablePromise.config({ cancellation: true });
 
-  return new CancellablePromise((resolve, reject) => {
-    promise
-      .then(resolve)
-      .catch(reject);
+  return new CancellablePromise(async (resolve, reject) => {
+    try {
+      const res = await promise;
+      resolve(res);
+    } catch (e) {
+      reject(e);
+    }
   });
 }
