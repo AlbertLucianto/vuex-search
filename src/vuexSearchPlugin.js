@@ -65,8 +65,6 @@ export default function vuexSearchPlugin({
 
     searchApi.subscribe(({ result, resourceName, text }) => {
       store.dispatch(`${namespace}${actionTypes.RECEIVE_RESULT}`, { result, resourceName, text });
-    }, (error) => {
-      throw error;
     });
 
     if (resourceGetter) {
@@ -78,6 +76,8 @@ export default function vuexSearchPlugin({
           resourceName,
           resources: _resourceGetter(store.state),
         });
+        const initialSearchString = store.getters[`${namespace}${getterTypes.resourceIndexByName}`](resourceName).text;
+        store.dispatch(`${namespace}${actionTypes.SEARCH}`, { resourceName, searchString: initialSearchString });
 
         store.watch(_resourceGetter, (data) => {
           const resourceIndex = resourceIndexes[resourceName];
@@ -89,7 +89,7 @@ export default function vuexSearchPlugin({
             resources: data,
           });
           store.dispatch(`${namespace}${actionTypes.SEARCH}`, { resourceName, searchString });
-        });
+        }, { deep: true });
       });
     }
   };
