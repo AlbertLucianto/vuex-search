@@ -1,28 +1,31 @@
 import { mapGetters } from 'vuex';
-import { normalizeNamespace } from './helpers';
+import defaultConfigs from './defaultConfigs';
+import { modulePathToNamespace } from './utils';
 
-function transformMapGetters(resourceName) {
+function transformComputed(resourceName) {
   return (mappedGetters) => {
-    const transformedMapGetters = {};
+    const transformedComputed = {};
 
     Object.entries(mappedGetters).forEach(([getterType, getter]) => {
-      transformedMapGetters[getterType] = function transformedGetter() {
+      transformedComputed[getterType] = function transformedGetter() {
         return getter.apply(this)(resourceName);
       };
     });
 
-    return transformedMapGetters;
+    return transformedComputed;
   };
 }
 
-export default name => function mapSearchGetters(
-  resourceName,
-  map,
-) {
-  const transformed = (
-    namespace,
-    _map,
-  ) => transformMapGetters(resourceName)(mapGetters(namespace, _map));
+export default function composeMapGetters(pluginName) {
+  return (resourceName, map) => {
+    const namespace = modulePathToNamespace([
+      defaultConfigs.moduleBaseName,
+      pluginName || defaultConfigs.defaultName,
+    ]);
 
-  return normalizeNamespace(transformed)(name, map);
-};
+    const computedMap = mapGetters(namespace, map);
+    const transformedComputed = transformComputed(resourceName)(computedMap);
+
+    return transformedComputed;
+  };
+}

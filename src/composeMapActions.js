@@ -1,5 +1,6 @@
 import { mapActions } from 'vuex';
-import { normalizeNamespace, normalizeMap } from './helpers';
+import defaultConfigs from './defaultConfigs';
+import { normalizeMap, modulePathToNamespace } from './utils';
 import * as actionTypes from './action-types';
 
 /**
@@ -20,48 +21,49 @@ import * as actionTypes from './action-types';
  * @param {object} actionMap User defined action mappings, it is required since
  *   Vuex's mapActions() does not have the actual actionType
  */
-function transformActions(resourceName, actionMap) {
+function transformMethods(resourceName, actionMap) {
   return (mappedActions) => {
-    const transformedActions = {};
+    const transformedMethods = {};
 
     Object.entries(mappedActions).forEach(([actionName, method]) => {
       let action = method;
 
       switch (actionMap[actionName]) {
         case actionTypes.SEARCH:
-          action = function transformedAction(text) {
+          action = function transformedMethod(text) {
             return method.bind(this)({ resourceName, searchString: text });
           };
           break;
         default:
           break;
       }
-      transformedActions[actionName] = action;
+      transformedMethods[actionName] = action;
     });
 
-    return transformedActions;
+    return transformedMethods;
   };
 }
 
 /**
  * A 'mapActions' composer based on vuexSearchPlugin name
  */
-export default name => function mapSearchActions(
-  resourceName,
-  map,
-) {
-  const transformed = (
-    namespace,
-    _map,
-  ) => {
-    // This is required for transformActions to recognise the 'actionType'.
+export default function composeMapActions(pluginName) {
+  return (resourceName, map) => {
+    // This is required for transformMethods to recognise the 'actionType'.
     // Before that, it needs to ensure the map is not an array.
     const actionMap = {};
     normalizeMap(map).forEach(({ key, val }) => {
       actionMap[key] = val;
     });
-    return transformActions(resourceName, actionMap)(mapActions(namespace, _map));
-  };
 
-  return normalizeNamespace(transformed)(name, map);
-};
+    const namespace = modulePathToNamespace([
+      defaultConfigs.moduleBaseName,
+      pluginName || defaultConfigs.defaultName,
+    ]);
+
+    const methodMap = mapActions(namespace, map);
+    const transformedMethods = transformMethods(resourceName, actionMap)(methodMap);
+
+    return transformedMethods;
+  };
+}

@@ -1,4 +1,5 @@
 import actionsWithSearch from './actions';
+import defaultConfigs from './defaultConfigs';
 import mutations from './mutations';
 import getters from './getters';
 import * as getterTypes from './getter-types';
@@ -6,15 +7,6 @@ import * as actionTypes from './action-types';
 import SubscribableSearchApi from './SearchApi';
 
 import { resourceGetterWrapper } from './utils';
-
-/**
- * Declared here to achieve encapsulation
- */
-const _defaultConfigs = {
-  moduleBaseName: 'vuexSearch',
-  defaultName: 'default',
-  namespaced: true,
-};
 
 /**
  * Register VuexStore module
@@ -25,7 +17,7 @@ function initVuexSearch(store) {
   const {
     moduleBaseName,
     namespaced,
-  } = _defaultConfigs;
+  } = defaultConfigs;
 
   store.registerModule(moduleBaseName, { state: {}, namespaced });
 }
@@ -45,30 +37,26 @@ export default function vuexSearchPlugin({
   resourceIndexes = {},
   resourceGetter,
   searchApi = new SubscribableSearchApi(),
-  name = _defaultConfigs.defaultName,
+  name = defaultConfigs.defaultName,
 } = {}) {
   return (store) => {
     const actions = actionsWithSearch(searchApi);
 
-    const searchModulePath = [_defaultConfigs.moduleBaseName, name];
+    const searchModulePath = [defaultConfigs.moduleBaseName, name];
 
-    if (!store.state[_defaultConfigs.moduleBaseName]) {
+    if (!store.state[defaultConfigs.moduleBaseName]) {
       initVuexSearch(store);
       vuexSearchPlugin._modules = store._modules;
     }
 
     store.registerModule(searchModulePath, {
       namespaced: true,
+      root: true,
       mutations,
       actions,
       getters,
       state: {},
     });
-
-    if (!vuexSearchPlugin.instantiated) {
-      Object.freeze(_defaultConfigs);
-      vuexSearchPlugin.instantiated = true;
-    }
 
     const namespace = vuexSearchPlugin._modules.getNamespace(searchModulePath);
 
@@ -106,10 +94,3 @@ export default function vuexSearchPlugin({
     }
   };
 }
-
-/**
- * Making gettable only property (unsettable).
- */
-Object.defineProperty(vuexSearchPlugin, 'configs', {
-  get() { return _defaultConfigs; },
-});
