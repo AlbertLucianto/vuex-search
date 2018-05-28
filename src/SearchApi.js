@@ -1,5 +1,6 @@
 /** @flow */
 import Search from 'js-worker-search';
+import { CancellationError } from 'bluebird';
 import { cancellablePromiseWrapper } from './utils';
 
 /* eslint-disable no-underscore-dangle */
@@ -63,9 +64,8 @@ export default class SubscribableSearchApi {
    *   and an :indexDocument callback
    * @param resourceName Uniquely identifies the resource (eg. "databases")
    * @param resources Map of resource uid to resource (Object)
-   * @param state State object to be passed to custom resource-indexing functions
    */
-  indexResource({ fieldNamesOrIndexFunction, resourceName, resources, state }) {
+  indexResource({ fieldNamesOrIndexFunction, resourceName, resources }) {
     const search = new Search({
       indexMode: this._indexMode,
       tokenizePattern: this._tokenizePattern,
@@ -91,7 +91,6 @@ export default class SubscribableSearchApi {
       fieldNamesOrIndexFunction({
         indexDocument: search.indexDocument,
         resources,
-        state,
       });
     } else {
       throw Error('Expected resource index to be either an Array of fields or an index function');
@@ -110,9 +109,6 @@ export default class SubscribableSearchApi {
    */
   async performSearch(resourceName, text) {
     try {
-      const currentSearch = this._currentSearchPromiseMap[resourceName];
-      if (currentSearch) currentSearch.cancel();
-
       const search = this._resourceToSearchMap[resourceName];
       const searchPromise = cancellablePromiseWrapper(search.search(text));
       this._currentSearchPromiseMap[resourceName] = searchPromise;
@@ -128,10 +124,16 @@ export default class SubscribableSearchApi {
 
       return result;
     } catch (error) {
+      if (error instanceof CancellationError) return [];
       this._notifyError(error);
 
       throw error;
     }
+  }
+
+  stopSearch(resourceName) {
+    const currentSearch = this._currentSearchPromiseMap[resourceName];
+    if (currentSearch) currentSearch.cancel();
   }
 
   /** Notify all subscribes of :onError */
