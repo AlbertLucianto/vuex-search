@@ -16,11 +16,14 @@ export function transformComputed(resourceName) {
   };
 }
 
-export default function composeMapGetters(pluginName) {
+export default function composeMapGetters(
+  pluginName = defaultConfigs.defaultName,
+  baseName = defaultConfigs.moduleBaseName,
+) {
   return (resourceName, map) => {
     const namespace = modulePathToNamespace([
-      defaultConfigs.moduleBaseName,
-      pluginName || defaultConfigs.defaultName,
+      baseName,
+      pluginName,
     ]);
 
     const computedMap = mapGetters(namespace, map);

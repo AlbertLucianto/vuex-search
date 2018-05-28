@@ -23,11 +23,8 @@ export default function actionsWithSearch(search) {
       search.indexResource(params);
     },
 
-    [actionTypes.searchApi.DEFINE_INDEX](_, params) {
-      search.defineIndex(params);
-    },
-
     [actionTypes.searchApi.PERFORM_SEARCH](_, { resourceName, searchString }) {
+      search.stopSearch(resourceName);
       search.performSearch(resourceName, searchString);
     },
 

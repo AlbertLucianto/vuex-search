@@ -13,7 +13,7 @@ import { resourceGetterWrapper } from './utils';
  *
  * @param {Store} store
  */
-function initVuexSearch(store) {
+export function initVuexSearch(store) {
   const {
     moduleBaseName,
     namespaced,

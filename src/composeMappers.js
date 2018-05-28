@@ -1,7 +1,7 @@
 import composeSearchActions from './composeMapActions';
 import composeSearchGetters from './composeMapGetters';
 
-export default name => ({
-  mapSearchActions: composeSearchActions(name),
-  mapSearchGetters: composeSearchGetters(name),
+export default (name, base) => ({
+  mapSearchActions: composeSearchActions(name, base),
+  mapSearchGetters: composeSearchGetters(name, base),
 });
