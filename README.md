@@ -50,6 +50,7 @@ export default {
 * __resourceIndexes__: Dictionary of `resourceName`s and their corresponding fields to be indexed by.
 * __resourceGetter__: Tells Vuex Search for which state should be watched and reindexed on change.
 * __name__ (optional): Identifier for Vue component to map `getters` and `actions` from Vuex Search's states.
+* __searchApi__ (optional): [Customizing search index.](#customizing-search-index)
 
 ```javascript
 // store/index.js
@@ -83,6 +84,7 @@ const { mapSearchGetters, mapSearchActions } = composeSearchMappers('myIndex');
 data() {
   return { text: '' },
 },
+
 computed: {
   ...mapSearchGetters('contacts', {
     resultIds: getterTypes.result,
@@ -98,4 +100,71 @@ methods: {
     this.searchContacts(this.text);
   },
 },
+```
+
+### Customizing Search Index
+
+By default, vuex-search builds an index to match all substrings.
+You can override this behavior by providing your own, pre-configured `searchApi` param to the plugin like so:
+
+```js
+import vuexSearchPlugin, { SearchApi, INDEX_MODES } from 'vuex-search'
+
+// all-substrings match by default; same as current
+// eg "c", "ca", "a", "at", "cat" match "cat"
+const allSubstringsSearchApi = new SearchApi()
+
+// prefix matching (eg "c", "ca", "cat" match "cat")
+const prefixSearchApi = new SearchApi({
+  indexMode: INDEX_MODES.PREFIXES
+})
+
+// exact words matching (eg only "cat" matches "cat")
+const exactWordsSearchApi = new SearchApi({
+  indexMode: INDEX_MODES.EXACT_WORDS
+})
+
+const store = new Vuex.Store({
+  state,
+  plugins: [
+    vuexSearchPlugin({
+      name: 'myIndex',
+      resourceIndexes: {
+        contacts: ['address', 'name'],
+      },
+      resourceGetter: (resourceName, state) => state.myResources[resourceName],
+      searchApi: exactWordsSearchApi, // or allSubstringSearchApi; or prefixSearchApi
+    }),
+  ],
+});
+```
+
+### Custom word boundaries (tokenization) and case-sensitivity
+
+You can also pass parameters to the SearchApi constructor that customize the way the
+search splits up the text into words (tokenizes) and change the search from the default
+case-insensitive to case-sensitive:
+
+```js
+import vuexSearchPlugin { SearchApi } from 'vuex-search'
+
+const store = new Vuex.Store({
+  state,
+  plugins: [
+    vuexSearchPlugin({
+      name: 'myIndex',
+      resourceIndexes: {
+        contacts: ['address', 'name'],
+      },
+      resourceGetter: (resourceName, state) => state.myResources[resourceName],
+      searchApi: new SearchApi({
+        // split on all non-alphanumeric characters,
+        // so this/that gets split to ['this','that'], for example
+        tokenizePattern: /[^a-z0-9]+/,
+        // make the search case-sensitive
+        caseSensitive: true
+      }),
+    }),
+  ],
+});
 ```
