@@ -224,7 +224,7 @@ Vuex Search can be accessed through `store.search` or `this.$store.search` in a 
 * `config: Object`: A list of options for indexing resource. Currently available options are:
   * `index: string[]`: List of fields to be indexed.
   * `getter: (state) => resource`: Getter function to access the resource from root state and to watch.
-  * `searchApi: SearchApi` (optional): Custom `SearchApi`
+  * `searchApi: SearchApi` (optional): [Custom search index.](#customizing-search-index) If defined, it is used instead of the shared `searchApi` instance.
 
 #### `unregisterResource(resourceName)`
 
