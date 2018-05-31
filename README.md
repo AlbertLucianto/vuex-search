@@ -49,7 +49,7 @@ export default {
 
 ### Vuex Search plugin
 
-* __resources__: Dictionary of `resourceName` and their configurations.
+* __resources__: Dictionary of `resourceName` and their index options.
 * __searchApi__ (optional): [Customizing search index.](#customizing-search-index)
 
 ```javascript
@@ -72,11 +72,18 @@ const store = new Vuex.Store({
           // access the state to be watched by Vuex Search
           getter: state => state.myResources.contacts,
         },
+        // otherResource: { index, getter },
       },
     }),
   ],
 });
 ```
+
+Options of each resources:
+
+* __index__: List of fields to be indexed.
+* __getter__: State getter of the resource.
+* __searchApi?__: [Custom search index.](#customizing-search-index) If defined, it is used instead of the shared searchApi instance.
 
 ### Binding with Vue Component
 
@@ -119,7 +126,7 @@ By default, vuex-search builds an index to match all substrings.
 You can override this behavior by providing your own, pre-configured `searchApi` param to the plugin like so:
 
 ```js
-import vuexSearchPlugin, { SearchApi, INDEX_MODES } from 'vuex-search';
+import vuexSearch, { SearchApi, INDEX_MODES } from 'vuex-search';
 
 // all-substrings match by default; same as current
 // eg "c", "ca", "a", "at", "cat" match "cat"
@@ -163,7 +170,7 @@ import vuexSearch, { SearchApi } from 'vuex-search';
 const store = new Vuex.Store({
   state,
   plugins: [
-    vuexSearchPlugin({
+    vuexSearch({
       resources: {
         contacts: {
           index: ['address', 'name'],
