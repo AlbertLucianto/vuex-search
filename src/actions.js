@@ -3,7 +3,7 @@ import * as actionTypes from './action-types';
 
 /**
  * Middleware for interacting with the search API
- * @param {Search} Search object
+ * @param {{ [resourceName: string]: Search }} searchMap mapper of each resources searchApi
  */
 export default function actionsWithSearch(searchMap) {
   return {
@@ -21,8 +21,9 @@ export default function actionsWithSearch(searchMap) {
       });
     },
 
-    [actionTypes.searchApi.INDEX_RESOURCE](_, { resourceName, ...params }) {
-      searchMap[resourceName].indexResource({ resourceName, ...params });
+    [actionTypes.searchApi.INDEX_RESOURCE](_, { params }) {
+      const { resourceName } = params;
+      searchMap[resourceName].indexResource(params);
     },
 
     [actionTypes.searchApi.PERFORM_SEARCH](_, { resourceName, searchString }) {

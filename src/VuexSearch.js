@@ -6,8 +6,6 @@ import * as getterTypes from './getter-types';
 import * as mutationTypes from './mutation-types';
 
 class VuexSearch {
-  static base = 'vuexSearch';
-
   constructor({
     store,
     resources,
@@ -113,5 +111,12 @@ class VuexSearch {
     return this._store._modules.getNamespace(modulePath);
   }
 }
+
+let base = 'vuexSearch';
+
+Object.defineProperty(VuexSearch, 'base', {
+  get() { return base; },
+  set(newBase) { base = newBase; },
+});
 
 export default VuexSearch;
