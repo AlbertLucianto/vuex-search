@@ -1,5 +1,4 @@
 export const RECEIVE_RESULT = '@@vuexSearch/action/RECEIVE_RESULT';
-export const INITIALIZE_RESOURCES = '@@vuexSearch/action/INITIALIZE_RESOURCES';
 export const SEARCH = '@@vuexSearch/action/SEARCH';
 export const searchApi = {
   INDEX_RESOURCE: '@@vuexSearch/action/API/INDEX_RESOURCE',

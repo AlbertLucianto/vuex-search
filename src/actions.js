@@ -15,12 +15,6 @@ export default function actionsWithSearch(searchMap) {
       });
     },
 
-    [actionTypes.INITIALIZE_RESOURCES]({ commit }, { resourceNames }) {
-      resourceNames.forEach((resourceName) => {
-        commit(mutationTypes.SET_INIT_RESOURCE, { resourceName });
-      });
-    },
-
     [actionTypes.searchApi.INDEX_RESOURCE](_, params) {
       const { resourceName } = params;
       searchMap[resourceName].indexResource(params);
