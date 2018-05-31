@@ -229,3 +229,17 @@ Vuex Search can be accessed through `store.search` or `this.$store.search` in a 
 #### `unregisterResource(resourceName)`
 
 Remove outdated resource indexes, and unwatch/unsubscribe any watchers/subscriptions related to `resourceName`.
+
+### Changing Base
+
+By default, vuex-search will register its module in `vuexSearch` from root state. To avoid possible clash naming, you can change its base name before defining the plugin in the store through
+
+```js
+import { VuexSearch } from 'vuex-search';
+
+VuexSearch.base = 'vuexSearchNew';
+
+const store = new Vuex.Store({
+  // ... store options
+});
+```

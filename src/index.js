@@ -6,6 +6,7 @@ import { SEARCH as search } from './action-types';
 import { api as getterTypes } from './getter-types';
 import mapActions from './mapActions';
 import mapGetters from './mapGetters';
+import VuexSearch from './VuexSearch';
 
 const actionTypes = { search };
 
@@ -16,6 +17,7 @@ export {
   getterTypes,
   mapActions,
   mapGetters,
+  VuexSearch,
 };
 
 export default plugin;
