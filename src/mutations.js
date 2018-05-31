@@ -26,4 +26,8 @@ export default {
     Vue.set(state[resourceName], 'text', searchString);
     Vue.set(state[resourceName], 'isSearching', true);
   },
+
+  [mutationTypes.DELETE_RESOURCE]: (state, { resourceName }) => {
+    Vue.delete(state, resourceName);
+  },
 };
