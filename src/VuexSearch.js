@@ -16,7 +16,7 @@ class VuexSearch {
     this._defaultSearchApi = searchApi;
     this._searchMap = {};
     this._unwatchResource = {};
-    this._unsubscribeSearch = {};
+    this._customSearch = new Map();
     /* eslint-disable-next-line no-param-reassign */
     store.search = this;
 
@@ -41,14 +41,6 @@ class VuexSearch {
     Object.entries(resources).forEach(([resourceName, config]) => {
       this.registerResource(resourceName, config);
     });
-
-    const ns = this.getNamespace(this._base);
-
-    this._defaultSearchApi.subscribe(({ result, resourceName, text }) => {
-      this._store.dispatch(`${ns}${actionTypes.RECEIVE_RESULT}`, {
-        result, resourceName, text,
-      });
-    });
   }
 
   registerResource(resourceName, config) {
@@ -57,18 +49,15 @@ class VuexSearch {
 
     store.commit(`${namespace}${mutationTypes.SET_INIT_RESOURCE}`, { resourceName });
 
-    const { getter, index, searchApi } = config;
+    const { getter, index, searchApi = this._defaultSearchApi } = config;
 
-    this._searchMap[resourceName] = searchApi || this._defaultSearchApi;
+    this._searchMap[resourceName] = searchApi;
 
-    // If custom searchApi is provided, it needs to be subscribed and unsubscribed separately
-    if (searchApi) {
-      this._unsubscribeSearch[resourceName] = searchApi.subscribe(({ result, text }) => {
-        this._store.dispatch(`${namespace}${actionTypes.RECEIVE_RESULT}`, {
-          result, resourceName, text,
-        });
+    this.searchSubscribeIfNecessary(searchApi, resourceName, ({ result, text }) => {
+      this._store.dispatch(`${namespace}${actionTypes.RECEIVE_RESULT}`, {
+        result, resourceName, text,
       });
-    }
+    });
 
     store.dispatch(`${namespace}${actionTypes.searchApi.INDEX_RESOURCE}`, {
       fieldNamesOrIndexFunction: index,
@@ -96,15 +85,42 @@ class VuexSearch {
   }
 
   unregisterResource(resourceName) {
-    this._searchMap[resourceName].stopSearch(resourceName);
+    const store = this._store;
+    const namespace = this.getNamespace(this._base);
+
+    const searchApi = this._searchMap[resourceName];
+    this.searchUnsubscribeIfNecessary(searchApi, resourceName);
+    searchApi.stopSearch(resourceName);
     delete this._searchMap[resourceName];
 
-    const unsubscribe = this._unsubscribeSearch[resourceName];
-    if (unsubscribe instanceof Function) {
-      unsubscribe();
-    }
+    const unwatch = this._unwatchResource[resourceName];
+    unwatch();
+    delete this._unwatchResource[resourceName];
 
-    this._unwatchResource[resourceName]();
+    store.commit(`${namespace}${mutationTypes.DELETE_RESOURCE}`, { resourceName });
+  }
+
+  searchSubscribeIfNecessary(searchApi, resourceName, fn) {
+    const map = this._customSearch.get(searchApi);
+    if (!map) {
+      this._customSearch.set(
+        searchApi, {
+          unsubscribe: searchApi.subscribe(fn),
+          resources: [resourceName],
+        });
+    } else {
+      map.resources.push(resourceName);
+    }
+  }
+
+  searchUnsubscribeIfNecessary(searchApi, resourceName) {
+    const map = this._customSearch.get(searchApi);
+    if (map.resources.length === 1) {
+      map.unsubscribe();
+      this._customSearch.delete(searchApi);
+    } else {
+      map.resources = map.resources.filter(name => name !== resourceName);
+    }
   }
 
   getNamespace(...modulePath) {
