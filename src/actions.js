@@ -21,7 +21,7 @@ export default function actionsWithSearch(searchMap) {
       });
     },
 
-    [actionTypes.searchApi.INDEX_RESOURCE](_, { params }) {
+    [actionTypes.searchApi.INDEX_RESOURCE](_, params) {
       const { resourceName } = params;
       searchMap[resourceName].indexResource(params);
     },
