@@ -38,16 +38,6 @@ export function modulePathToNamespace(modulePath) {
 }
 
 /**
- * Transform getters to avoid currying complication in api.
- *
- * @param {string} resourceName
- * @param {(resourceName: string, store: Store) => State)} resourceGetter
- */
-export function resourceGetterWrapper(resourceName, resourceGetter) {
-  return state => resourceGetter(resourceName, state);
-}
-
-/**
  * Basic Promise does not support promise cancellation.
  * This function wraps the basic promise and returns cancellable one.
  *
