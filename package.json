@@ -1,6 +1,6 @@
 {
   "name": "vuex-search",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "description": "Vuex binding for client-side search with indexers and Web Workers",
   "author": "Albert Lucianto",
   "main": "dist/commonjs/index.js",
