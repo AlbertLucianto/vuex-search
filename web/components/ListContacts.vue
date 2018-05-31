@@ -44,12 +44,15 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { actionTypes, getterTypes, composeSearchMappers } from 'vuex-search';
+import {
+  actionTypes,
+  getterTypes,
+  mapActions as mapSearchActions,
+  mapGetters as mapSearchGetters,
+} from 'vuex-search';
 import ContactDetail from '@/components/ContactDetail';
 import InputField from '@/components/InputField';
 import StyledButton from '@/components/StyledButton';
-
-const { mapSearchActions, mapSearchGetters } = composeSearchMappers();
 
 export default {
   components: {

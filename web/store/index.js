@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import vuexSearchPlugin from 'vuex-search';
+import vuexSearch from 'vuex-search';
 
 import * as getters from './getters';
 import actions from './actions';
@@ -18,11 +18,13 @@ export default new Vuex.Store({
   mutations,
   state: initialState,
   plugins: [
-    vuexSearchPlugin({
-      resourceIndexes: {
-        contacts: ['address', 'name', 'words'],
+    vuexSearch({
+      resources: {
+        contacts: {
+          index: ['address', 'name', 'words'],
+          getter: state => state.resources.contacts,
+        },
       },
-      resourceGetter: (resourceName, state) => state.resources[resourceName],
     }),
   ],
 });
