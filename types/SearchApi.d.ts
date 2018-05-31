@@ -3,7 +3,8 @@ export declare class SearchApi {
 
   subscribe(onNext: (searchResult: SearchResult) => any, onError: (message: any) => any): () => void;
   indexResource<R extends Resource>(options: IndexResourceOptions<R>): void;
-  performSearch: (resourceName: string, text: string) => void;
+  performSearch: (resourceName: string, text: string) => Promise<string[]>;
+  stopSearch: (resourceName: string) => void;
 }
 
 export declare enum INDEX_MODES {

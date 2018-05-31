@@ -17,12 +17,5 @@ export declare enum getterTypes {
   result,
 }
 
-export type SearchActionMappers = MapperWithResourceName<ActionMethod, actionTypes>;
-export type SearchGetterMappers = MapperWithResourceName<Computed, getterTypes>;
-
-export declare function composeSearchActions(name?: string): SearchActionMappers;
-export declare function composeSearchGetters(name?: string): SearchGetterMappers;
-export declare function composeSearchMappers(name?: string): {
-  mapSearchActions: SearchActionMappers,
-  mapSearchGetters: SearchGetterMappers,
-}
+export type mapActions = MapperWithResourceName<ActionMethod, actionTypes>;
+export type mapGetters = MapperWithResourceName<Computed, getterTypes>;
