@@ -1,4 +1,4 @@
-# Vuex Search
+<p align="center"><a href="https://albertlucianto.github.io/vuex-search" target="_blank" rel="noopener noreferrer"><img width="600" src="./web/assets/vuex-search-header.png" alt="Vuex Search"></a></p>
 
 <a href="https://codecov.io/github/AlbertLucianto/vuex-search?branch=master"><img src="https://img.shields.io/codecov/c/github/AlbertLucianto/vuex-search/master.svg" alt="Coverage Status"></a>
 <a href="https://travis-ci.org/AlbertLucianto/vuex-search"><img src="https://travis-ci.org/AlbertLucianto/vuex-search.svg?branch=master" alt="Build Status"></a>
@@ -49,8 +49,12 @@ export default {
 
 ### Vuex Search plugin
 
-* __resources__: Dictionary of `resourceName` and their index options.
-* __searchApi__ (optional): [Customizing search index.](#customizing-search-index)
+#### `vuexSearch(options)`
+
+* `options: Object`: List of options for defining the plugin. Available options are:
+
+  * `resources`: Dictionary of `resourceName` and their index options.
+  * `searchApi` (optional): [Customizing search index.](#customizing-search-index)
 
 ```javascript
 // store/index.js
@@ -79,11 +83,11 @@ const store = new Vuex.Store({
 });
 ```
 
-Options of each resources:
+Where each resource has options:
 
-* __index__: List of fields to be indexed.
-* __getter__: State getter of the resource.
-* __searchApi?__: [Custom search index.](#customizing-search-index) If defined, it is used instead of the shared searchApi instance.
+* `index: string[]`: List of fields to be indexed.
+* `getter: (state) => resource`: Getter function to access the resource from root state and to watch.
+* `searchApi: SearchApi` (optional): [Custom search index.](#customizing-search-index) If defined, it is used instead of the shared `searchApi` instance.
 
 ### Binding with Vue Component
 
@@ -119,6 +123,24 @@ methods: {
   },
 },
 ```
+
+#### `mapGetters(resourceName, getterMap): mappedGetters`
+
+Similar to Vuex helper for mapping attributes, `getterMap` can be either an object or an array.
+
+#### `mapActions(resourceName, actionMap): mappedActions`
+
+Similar to Vuex helper for mapping attributes, `actionMap` can be either an object or an array.
+
+#### `getterTypes`
+
+* `result`
+* `isSearching`
+* `resourceIndex`: full state of resource index (including `result`, `isSearching`, and current `search`)
+
+#### `actionTypes`
+
+* `search`: mapped action has its first argument the text to search.
 
 ### Customizing Search Index
 
@@ -188,3 +210,20 @@ const store = new Vuex.Store({
   ],
 });
 ```
+
+### Dynamic Index Registration
+
+When a module needs to be loaded or registered dynamically, statically defined plugin can be a problem. The solution is to use vuex-search dynamic index registration.
+
+Vuex Search can be accessed through `store.search` or `this.$store.search` in a Vue instance and available methods are:
+
+#### `registerResource(resourceName, config)`
+
+* `config: Object`: A list of options for indexing resource. Currently available options are:
+  * `index: string[]`: List of fields to be indexed.
+  * `getter: (state) => resource`: Getter function to access the resource from root state and to watch.
+  * `searchApi: SearchApi` (optional): Custom `SearchApi`
+
+#### `unregisterResource(resourceName)`
+
+Remove outdated resource indexes, and unwatch/unsubscribe any watchers/subscriptions related to `resourceName`.
