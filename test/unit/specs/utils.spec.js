@@ -2,7 +2,6 @@ import {
   normalizeMap,
   normalizeNamespaceName,
   modulePathToNamespace,
-  resourceGetterWrapper,
   cancellablePromiseWrapper,
 } from 'vuex-search/utils';
 
@@ -86,21 +85,6 @@ describe('modulePathToNamespace', () => {
     const namespace = modulePathToNamespace(modulePath);
 
     expect(namespace).toEqual('{"test":"path"}/');
-  });
-});
-
-describe('resourceGetterWrapper', () => {
-  test('should reverse currying resources\' getters', () => {
-    const state = { test: 'testData' };
-
-    const resourceName = 'test';
-    const resourceGetter = (resName, stt) => stt[resName];
-
-    const getter = resourceGetterWrapper(resourceName, resourceGetter);
-
-    const data = getter(state);
-
-    expect(data).toEqual('testData');
   });
 });
 
