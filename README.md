@@ -51,7 +51,7 @@ export default {
 
 ### Vuex Search plugin
 
-#### `vuexSearch(options)`
+#### `searchPlugin(options)`
 
 * `options: Object`: List of options for defining the plugin. Available options are:
 
@@ -62,7 +62,7 @@ export default {
 // store/index.js
 import Vue from 'vue';
 import Vuex from 'vuex';
-import vuexSearch from 'vuex-search';
+import searchPlugin from 'vuex-search';
 import state from './state';
 
 Vue.use(Vuex);
@@ -70,7 +70,7 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
   state,
   plugins: [
-    vuexSearch({
+    searchPlugin({
       resources: {
         contacts: {
           // what fields to index
@@ -150,7 +150,7 @@ By default, vuex-search builds an index to match all substrings.
 You can override this behavior by providing your own, pre-configured `searchApi` param to the plugin like so:
 
 ```js
-import vuexSearch, { SearchApi, INDEX_MODES } from 'vuex-search';
+import searchPlugin, { SearchApi, INDEX_MODES } from 'vuex-search';
 
 // all-substrings match by default; same as current
 // eg "c", "ca", "a", "at", "cat" match "cat"
@@ -169,7 +169,7 @@ const exactWordsSearchApi = new SearchApi({
 const store = new Vuex.Store({
   state,
   plugins: [
-    vuexSearch({
+    searchPlugin({
       resources: {
         contacts: {
           index: ['address', 'name'],
@@ -189,12 +189,12 @@ search splits up the text into words (tokenizes) and change the search from the 
 case-insensitive to case-sensitive:
 
 ```js
-import vuexSearch, { SearchApi } from 'vuex-search';
+import searchPlugin, { SearchApi } from 'vuex-search';
 
 const store = new Vuex.Store({
   state,
   plugins: [
-    vuexSearch({
+    searchPlugin({
       resources: {
         contacts: {
           index: ['address', 'name'],
@@ -243,3 +243,13 @@ const store = new Vuex.Store({
   // ... store options
 });
 ```
+
+Changelog
+---------
+
+Changes are tracked in the [changelog](CHANGELOG.md).
+
+License
+---------
+
+vuex-search is available under the MIT License.
