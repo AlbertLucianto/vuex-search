@@ -5,7 +5,22 @@ import * as actionTypes from './action-types';
 import * as getterTypes from './getter-types';
 import * as mutationTypes from './mutation-types';
 
+/* eslint-disable no-underscore-dangle */
+
+/**
+ * Class that creates submodule in Vuex Store, and manages watched
+ * states registration and unregistration, and SearchApi subscriptions.
+ */
 class VuexSearch {
+  /**
+   * Constructor.
+   *
+   * @param {Store} store A vuex store instance
+   * @param {[resourceName: string]: { getter, indexes, searchApi? }} resources
+   *    Options of resources and its index fields, getter, and optional searchApi
+   * @param {SearchApi} searchApi Custom SearchApi to be used and shared by resources
+   *    with no custom searchApi.
+   */
   constructor({
     store,
     resources,
@@ -24,6 +39,10 @@ class VuexSearch {
     this.initResources(resources);
   }
 
+  /**
+   * Share map from resourceName to searchApi with actions
+   * and register VuexSearch submodule on Vuex Store.
+   */
   initModule() {
     const actions = actionsWithSearch(this._searchMap);
 
@@ -37,12 +56,28 @@ class VuexSearch {
     });
   }
 
+  /**
+   * Initialize all resources which are statically defined in store.
+   *
+   * @param {[resourceName: string]: { getter, indexes, searchApi? }} resources
+   *    Options of resources and its index fields, getter, and optional searchApi
+   */
   initResources(resources) {
     Object.entries(resources).forEach(([resourceName, config]) => {
       this.registerResource(resourceName, config);
     });
   }
 
+  /**
+   * Dynamically register resource for indexing.
+   *
+   * @param resourceName Uniquely identifies the resource (eg. "databases")
+   *
+   * config:
+   * @param {(state) => data} getter Function getter to access resource and to be watched.
+   * @param {string[]} index Fields to be indexed.
+   * @param {SearchApi} searchApi (optional) Custom SearchApi for this resource.
+   */
   registerResource(resourceName, config) {
     const store = this._store;
     const namespace = this.getNamespace(this._base);
@@ -53,7 +88,7 @@ class VuexSearch {
 
     this._searchMap[resourceName] = searchApi;
 
-    this.searchSubscribeIfNecessary(searchApi, resourceName, ({ result, text }) => {
+    this._searchSubscribeIfNecessary(searchApi, resourceName, ({ result, text }) => {
       this._store.dispatch(`${namespace}${actionTypes.RECEIVE_RESULT}`, {
         result, resourceName, text,
       });
@@ -84,12 +119,19 @@ class VuexSearch {
     }, { deep: true });
   }
 
+  /**
+   * Unregister resource from indexing.
+   * This method will unwatch state changes and unsubscribe from searchApi
+   * used by the resource.
+   *
+   * @param resourceName Resource name to be unregistered.
+   */
   unregisterResource(resourceName) {
     const store = this._store;
     const namespace = this.getNamespace(this._base);
 
     const searchApi = this._searchMap[resourceName];
-    this.searchUnsubscribeIfNecessary(searchApi, resourceName);
+    this._searchUnsubscribeIfNecessary(searchApi, resourceName);
     searchApi.stopSearch(resourceName);
     delete this._searchMap[resourceName];
 
@@ -100,7 +142,20 @@ class VuexSearch {
     store.commit(`${namespace}${mutationTypes.DELETE_RESOURCE}`, { resourceName });
   }
 
-  searchSubscribeIfNecessary(searchApi, resourceName, fn) {
+  /**
+   * Register resourceName to be kept tracked by customSearch map and check
+   * whether need to subscribe if the searchApi is not yet subscribed.
+   *
+   * customSearch is a map from searchApi instance to list of resources using it
+   * and unsubscribe callback.
+   *
+   * @param {SearchApi} searchApi SearchApi instance to be subscribed.
+   *    Will be checked if already been subscribed to prevent duplication.
+   * @param resourceName Resource to be kept tracked by the map
+   * @param {Function} fn callback with signature:
+   *    ({ result: string[], resourceName, text }) => void
+   */
+  _searchSubscribeIfNecessary(searchApi, resourceName, fn) {
     const map = this._customSearch.get(searchApi);
     if (!map) {
       this._customSearch.set(
@@ -113,7 +168,14 @@ class VuexSearch {
     }
   }
 
-  searchUnsubscribeIfNecessary(searchApi, resourceName) {
+  /**
+   * Remove a resource from searchApi's resources list and
+   * unsubscribe searchApi if no resources using it anymore.
+   *
+   * @param {SearchApi} searchApi SearchApi instance to be unsubscribed.
+   * @param resourceName Resource to be removed from customSearch map.
+   */
+  _searchUnsubscribeIfNecessary(searchApi, resourceName) {
     const map = this._customSearch.get(searchApi);
     if (map.resources.length === 1) {
       map.unsubscribe();
@@ -123,6 +185,10 @@ class VuexSearch {
     }
   }
 
+  /**
+   * Get namespace from Vuex Store's modules' internal map of
+   * module path to namespace.
+   */
   getNamespace(...modulePath) {
     return this._store._modules.getNamespace(modulePath);
   }
@@ -130,6 +196,9 @@ class VuexSearch {
 
 let base = 'vuexSearch';
 
+/**
+ * VuexSearch static property 'base'
+ */
 Object.defineProperty(VuexSearch, 'base', {
   get() { return base; },
   set(newBase) { base = newBase; },

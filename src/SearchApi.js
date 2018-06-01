@@ -6,7 +6,7 @@ import { cancellablePromiseWrapper } from './utils';
 /* eslint-disable no-underscore-dangle */
 
 /**
- * Observable that manages communication between vuex-search middleware and the Search utility.
+ * Observable that manages communication between vuex-search plugin and the Search utility.
  * This class maps resource names to search indicies and manages subscribers.
  */
 export default class SubscribableSearchApi {
@@ -131,6 +131,10 @@ export default class SubscribableSearchApi {
     }
   }
 
+  /**
+   * Stop search by resourceName if running.
+   * Promise of search will be cancelled (rejected with CancellationError)
+   */
   stopSearch(resourceName) {
     const currentSearch = this._currentSearchPromiseMap[resourceName];
     if (currentSearch) currentSearch.cancel();
