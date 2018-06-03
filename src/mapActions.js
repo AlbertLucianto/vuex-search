@@ -1,11 +1,23 @@
 import { normalizeMap, normalizeNamespaceName } from './utils';
 import * as actionTypes from './action-types';
 
+/**
+ * Get vuex-search module by checking base name in root store.
+ *
+ * @param {Store} store
+ */
 function getVuexSearchModule(store) {
   const base = normalizeNamespaceName(store.search._base);
   return store._modulesNamespaceMap[base];
 }
 
+/**
+ * Inject resourceName to payload/args based on actionType
+ *
+ * @param {String} resourceName Unique resource identifier defined in the plugin.
+ * @param {String} actionType
+ * @param {Array} args
+ */
 export const transformPayload = (
   resourceName,
   actionType,
@@ -21,6 +33,14 @@ export const transformPayload = (
   }
 };
 
+/**
+ * Generate actions with transformed payload for simpler api.
+ *
+ * @param {String} [resourceName] Unique resource identifier defined in the plugin.
+ * @param {Object|Array} actions Object mapping from intented method name to actionType;
+ *    or an array of actionTypes.
+ * @return {Object}
+ */
 export default (resourceName, actions) => {
   const res = {};
   normalizeMap(actions).forEach(({ key, val }) => {
