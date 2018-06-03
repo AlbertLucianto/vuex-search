@@ -8118,6 +8118,12 @@ vue-template-es2015-compiler@^1.5.3, vue-template-es2015-compiler@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.6.0.tgz#dc42697133302ce3017524356a6c61b7b69b4a18"
 
+vue-text-highlight@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/vue-text-highlight/-/vue-text-highlight-1.0.0.tgz#1f07101b18fffb825c5a9fa79b6185454286b53d"
+  dependencies:
+    vue "^2.5.2"
+
 vue-virtual-scroller@^0.11.7:
   version "0.11.7"
   resolved "https://registry.yarnpkg.com/vue-virtual-scroller/-/vue-virtual-scroller-0.11.7.tgz#afa49ced5eca58cfec33160968f1c5112360940a"
@@ -8125,7 +8131,7 @@ vue-virtual-scroller@^0.11.7:
     vue-observe-visibility "^0.3.1"
     vue-resize "^0.4.2"
 
-vue@^2.5.16:
+vue@^2.5.16, vue@^2.5.2:
   version "2.5.16"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.5.16.tgz#07edb75e8412aaeed871ebafa99f4672584a0085"
 
