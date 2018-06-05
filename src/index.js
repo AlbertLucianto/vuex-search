@@ -2,13 +2,10 @@ import { INDEX_MODES } from 'js-worker-search';
 
 import plugin from './plugin';
 import SearchApi from './SearchApi';
-import { SEARCH as search } from './action-types';
 import { api as getterTypes } from './getter-types';
 import mapActions from './mapActions';
 import mapGetters from './mapGetters';
-import VuexSearch from './VuexSearch';
-
-const actionTypes = { search };
+import VuexSearch, { publicApi as actionTypes } from './VuexSearch';
 
 export {
   SearchApi,

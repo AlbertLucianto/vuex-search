@@ -15,9 +15,9 @@ class VuexSearch {
   /**
    * Constructor.
    *
-   * @param {Store} store A vuex store instance
+   * @param {Store} store A vuex store instance.
    * @param {[resourceName: string]: { getter, indexes, searchApi? }} resources
-   *    Options of resources and its index fields, getter, and optional searchApi
+   *    Options of resources and its index fields, getter, and optional searchApi.
    * @param {SearchApi} searchApi Custom SearchApi to be used and shared by resources
    *    with no custom searchApi.
    */
@@ -30,6 +30,7 @@ class VuexSearch {
     this._store = store;
     this._defaultSearchApi = searchApi;
     this._searchMap = {};
+    this._resourceOptions = {};
     this._unwatchResource = {};
     this._customSearch = new Map();
     /* eslint-disable-next-line no-param-reassign */
@@ -59,8 +60,8 @@ class VuexSearch {
   /**
    * Initialize all resources which are statically defined in store.
    *
-   * @param {[resourceName: string]: { getter, indexes, searchApi? }} resources
-   *    Options of resources and its index fields, getter, and optional searchApi
+   * @param {[resourceName: string]: { getter, indexe, watch?, searchApi? }} resources
+   *    Options of resources and its index fields, getter, and optional watch and searchApi
    */
   initResources(resources) {
     Object.entries(resources).forEach(([resourceName, config]) => {
@@ -69,24 +70,28 @@ class VuexSearch {
   }
 
   /**
+   * - Public API -
    * Dynamically register resource for indexing.
    *
-   * @param resourceName Uniquely identifies the resource (eg. "databases")
+   * @param resourceName Uniquely identifies the resource (eg. "databases").
    *
    * config:
-   * @param {(state) => data} getter Function getter to access resource and to be watched.
+   * @param {(state: Object) => Array|Object} getter Function getter
+   *    to access resource and to be watched.
    * @param {string[]} index Fields to be indexed.
-   * @param {SearchApi} searchApi (optional) Custom SearchApi for this resource.
+   * @param {Boolean} [watch] Whether needs to reindex if resource changes
+   * @param {SearchApi} [searchApi] Custom SearchApi for this resource.
    */
   registerResource(resourceName, config) {
     const store = this._store;
-    const namespace = this.getNamespace(this._base);
+    const namespace = this._getNamespace(this._base);
 
     store.commit(`${namespace}${mutationTypes.SET_INIT_RESOURCE}`, { resourceName });
 
-    const { getter, index, searchApi = this._defaultSearchApi } = config;
+    const { getter, index, watch = true, searchApi = this._defaultSearchApi } = config;
 
     this._searchMap[resourceName] = searchApi;
+    this._resourceOptions[resourceName] = { getter, index };
 
     this._searchSubscribeIfNecessary(searchApi, resourceName, ({ result, text }) => {
       this._store.dispatch(`${namespace}${actionTypes.RECEIVE_RESULT}`, {
@@ -94,32 +99,64 @@ class VuexSearch {
       });
     });
 
+    this.reindex(resourceName);
+
+    const initialSearchString = this._getSearchText(resourceName);
+    this.search(resourceName, initialSearchString);
+
+    if (watch) {
+      this._unwatchResource[resourceName] = store.watch(getter, () => {
+        const searchString = this._getSearchText(resourceName);
+
+        this.reindex(resourceName);
+        this.search(resourceName, searchString);
+      }, { deep: true });
+    }
+  }
+
+  /**
+   * - Public API -
+   * Search wrapper function for dispatching search action.
+   *
+   * @param {String} resourceName Uniquely identifies the resource (eg. "databases").
+   * @param {String} searchString Text to search.
+   */
+  search(resourceName, searchString) {
+    const store = this._store;
+    const namespace = this._getNamespace(this._base);
+
+    store.dispatch(`${namespace}${actionTypes.SEARCH}`, {
+      resourceName, searchString,
+    });
+  }
+
+  /**
+   * - Public API -
+   * Reindex resource wrapper function for dispatching reindex action.
+   *
+   * This method is useful to avoid passing index fields and getter function
+   * of the resource.
+   *
+   * @param {String} resourceName Uniquely identifies the resource (eg. "databases").
+   */
+  reindex(resourceName) {
+    const store = this._store;
+    const namespace = this._getNamespace(this._base);
+
+    const { getter, index } = this._resourceOptions[resourceName];
+
     store.dispatch(`${namespace}${actionTypes.searchApi.INDEX_RESOURCE}`, {
       fieldNamesOrIndexFunction: index,
       resourceName,
       resources: getter(store.state),
     });
 
-    const initialSearchString = store.getters[`${namespace}${getterTypes.resourceIndexByName}`](resourceName).text;
-    store.dispatch(`${namespace}${actionTypes.SEARCH}`, {
-      resourceName, searchString: initialSearchString,
-    });
-
-    this._unwatchResource[resourceName] = store.watch(getter, (data) => {
-      const searchString = store.getters[`${namespace}${getterTypes.resourceIndexByName}`](resourceName).text;
-
-      store.dispatch(`${namespace}${actionTypes.searchApi.INDEX_RESOURCE}`, {
-        fieldNamesOrIndexFunction: index,
-        resourceName,
-        resources: data,
-      });
-      store.dispatch(`${namespace}${actionTypes.SEARCH}`, {
-        resourceName, searchString,
-      });
-    }, { deep: true });
+    const searchString = this._getSearchText(resourceName);
+    this.search(resourceName, searchString);
   }
 
   /**
+   * - Public API -
    * Unregister resource from indexing.
    * This method will unwatch state changes and unsubscribe from searchApi
    * used by the resource.
@@ -128,7 +165,9 @@ class VuexSearch {
    */
   unregisterResource(resourceName) {
     const store = this._store;
-    const namespace = this.getNamespace(this._base);
+    const namespace = this._getNamespace(this._base);
+
+    delete this._resourceOptions[resourceName];
 
     const searchApi = this._searchMap[resourceName];
     this._searchUnsubscribeIfNecessary(searchApi, resourceName);
@@ -136,7 +175,7 @@ class VuexSearch {
     delete this._searchMap[resourceName];
 
     const unwatch = this._unwatchResource[resourceName];
-    unwatch();
+    if (unwatch instanceof Function) unwatch();
     delete this._unwatchResource[resourceName];
 
     store.commit(`${namespace}${mutationTypes.DELETE_RESOURCE}`, { resourceName });
@@ -151,9 +190,8 @@ class VuexSearch {
    *
    * @param {SearchApi} searchApi SearchApi instance to be subscribed.
    *    Will be checked if already been subscribed to prevent duplication.
-   * @param resourceName Resource to be kept tracked by the map
-   * @param {Function} fn callback with signature:
-   *    ({ result: string[], resourceName, text }) => void
+   * @param resourceName Resource to be kept tracked by the map.
+   * @param {({ result: string[], resourceName, text }) => void} fn callback to be subscribed.
    */
   _searchSubscribeIfNecessary(searchApi, resourceName, fn) {
     const map = this._customSearch.get(searchApi);
@@ -186,22 +224,52 @@ class VuexSearch {
   }
 
   /**
+   * Wrapper function for getting resource index search text.
+   *
+   * @param {String} resourceName
+   * @returns {String}
+   */
+  _getSearchText(resourceName) {
+    const store = this._store;
+    const namespace = this._getNamespace(this._base);
+
+    return store.getters[`${namespace}${getterTypes.resourceIndexByName}`](resourceName).text;
+  }
+
+  /**
    * Get namespace from Vuex Store's modules' internal map of
    * module path to namespace.
+   * @param {String} path
+   * @returns {String}
    */
-  getNamespace(...modulePath) {
+  _getNamespace(...modulePath) {
     return this._store._modules.getNamespace(modulePath);
   }
 }
 
-let base = 'vuexSearch';
+/**
+ * Generate map of actions to be exposed.
+ */
+function getPublicApi() {
+  const publicApi = {};
+  Object
+    .getOwnPropertyNames(VuexSearch.prototype)
+    .filter(methodName => !methodName.startsWith('_'))
+    .forEach((methodName) => { publicApi[methodName] = methodName; });
+
+  Object.freeze(publicApi);
+
+  return publicApi;
+}
 
 /**
- * VuexSearch static property 'base'
+ * VuexSearch static property 'base'.
  */
+let base = 'vuexSearch';
 Object.defineProperty(VuexSearch, 'base', {
   get() { return base; },
   set(newBase) { base = newBase; },
 });
 
+export const publicApi = getPublicApi();
 export default VuexSearch;
