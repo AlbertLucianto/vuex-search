@@ -1,5 +1,46 @@
 # Changelog
 
+# 2.1.0
+
+_No breaking changes in this update._
+
+## Added new resource index option
+
+* `[watch]: Boolean`
+
+  Whether needs to reindex if resource changes. This option is useful to avoid reindex overhead when the resource frequently changes.
+
+  Default: `true`
+
+  __Example:__
+
+```javascript
+searchPlugin({
+  resources: {
+    contacts: {
+      index: ['address', 'name'],
+      getter: state => state.myResources.contacts,
+      // Do not reindex automatically if resource changes
+      watch: false,
+    },
+  },
+}),
+```
+
+## Added more `actionTypes`
+
+* `reindex`
+
+  Mapped action has signature: `() => void`. To be used when option `watch` is `false`. This action will reindex the resource and automatically re-`search` current search `text`.
+
+* `registerResource`
+
+  Mapped action has signature: `(options: IndexOptions) => void`. This action will dynamically add `resourceName` with options provided.
+
+* `unregisterResource`
+
+  Mapped action has signature: `() => void`. This action will unwatch and remove `resourceName` index.
+
 # 2.0.0
 
 ## Option schema changes for defining plugin

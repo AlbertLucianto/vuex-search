@@ -13,10 +13,12 @@ Vuex Search is a plugin for searching collections of objects. Search algorithms 
 
 ## [Demo](https://albertlucianto.github.io/vuex-search)
 
-Installation:
+## Installation:
 
 ```bash
-npm i vuex-search
+npm install --save vuex-search
+# or
+yarn add vuex-search
 ```
 
 ## Overview
@@ -55,8 +57,15 @@ export default {
 
 * `options: Object`: List of options for defining the plugin. Available options are:
 
-  * `resources`: Dictionary of `resourceName` and their index options.
-  * `searchApi` (optional): [Customizing search index.](#customizing-search-index)
+  * `resources: { [resourceName: String]: IndexOptions }`
+
+    Dictionary of `resourceName` and their index options. [See `IndexOptions`.](#indexoptions)
+
+  * `[searchApi]: SearchApi`
+
+    If provided, it will be used as default searchApi across resources. [See customizing search index.](#customizing-search-index)
+
+    Default: `new SearchApi()`
 
 ```javascript
 // store/index.js
@@ -78,18 +87,32 @@ const store = new Vuex.Store({
           // access the state to be watched by Vuex Search
           getter: state => state.myResources.contacts,
         },
-        // otherResource: { index, getter },
+        // otherResource: { index, getter, watch, searchApi },
       },
     }),
   ],
 });
 ```
 
-Where each resource has options:
+#### `IndexOptions`
 
-* `index: string[]`: List of fields to be indexed.
-* `getter: (state) => resource`: Getter function to access the resource from root state and to watch.
-* `searchApi: SearchApi` (optional): [Custom search index.](#customizing-search-index) If defined, it is used instead of the shared `searchApi` instance.
+* `index: Array<String>`
+
+  List of fields to be indexed.
+
+* `getter: (state: Object) => Array|Object`
+
+  Getter function to access the resource from root state and to watch.
+
+* `[watch]: Boolean`
+
+  Whether needs to reindex if resource changes. This option is useful to avoid reindex overhead when the resource frequently changes.
+
+  Default: `true`
+
+* `[searchApi]: SearchApi`
+
+  [Custom search index.](#customizing-search-index) If defined, it is used instead of the shared `searchApi` instance.
 
 ### Binding with Vue Component
 
@@ -126,23 +149,47 @@ methods: {
 },
 ```
 
-#### `mapGetters(resourceName, getterMap): mappedGetters`
+#### `mapGetters(resourceName, getterMap)`
 
 Similar to Vuex helper for mapping attributes, `getterMap` can be either an object or an array.
 
-#### `mapActions(resourceName, actionMap): mappedActions`
+#### `mapActions(resourceName, actionMap)`
 
 Similar to Vuex helper for mapping attributes, `actionMap` can be either an object or an array.
 
 #### `getterTypes`
 
 * `result`
+
+  Mapped state is an array of ids.
+
 * `isSearching`
-* `resourceIndex`: full state of resource index (including `result`, `isSearching`, and current `search`)
+
+  Mapped state is a `Boolean` indicating whether `searchApi` has resolved its promise of search result.
+
+* `resourceIndex`
+
+  Full state of resource index: `result`, `isSearching`, and current search `text`.
 
 #### `actionTypes`
 
-* `search`: mapped action has its first argument the text to search.
+* `search`
+
+  Mapped action has signature: `(query: String) => void`.
+
+* `reindex`
+
+  Mapped action has signature: `() => void`. To be used when option `watch` is `false`. This action will reindex the resource and automatically re-`search` current text.
+
+* `registerResource`
+
+  Mapped action has signature: `(options: IndexOptions) => void`. This action will dynamically add `resourceName` with options provided. [Recall `IndexOptions`.](#indexoptions)
+
+  [More about Dynamic Index Registration.](#dynamic-index-registration)
+
+* `unregisterResource`
+
+  Mapped action has signature: `() => void`. This action will unwatch and remove `resourceName` index.
 
 ### Customizing Search Index
 
@@ -153,15 +200,15 @@ You can override this behavior by providing your own, pre-configured `searchApi`
 import searchPlugin, { SearchApi, INDEX_MODES } from 'vuex-search';
 
 // all-substrings match by default; same as current
-// eg "c", "ca", "a", "at", "cat" match "cat"
+// eg 'c', 'ca', 'a', 'at', 'cat' match 'cat'
 const allSubstringsSearchApi = new SearchApi();
 
-// prefix matching (eg "c", "ca", "cat" match "cat")
+// prefix matching (eg 'c', 'ca', 'cat' match 'cat')
 const prefixSearchApi = new SearchApi({
   indexMode: INDEX_MODES.PREFIXES,
 });
 
-// exact words matching (eg only "cat" matches "cat")
+// exact words matching (eg only 'cat' matches 'cat')
 const exactWordsSearchApi = new SearchApi({
   indexMode: INDEX_MODES.EXACT_WORDS,
 });
@@ -217,14 +264,16 @@ const store = new Vuex.Store({
 
 When a module needs to be loaded or registered dynamically, statically defined plugin can be a problem. The solution is to use vuex-search dynamic index registration.
 
-Vuex Search can be accessed through `store.search` or `this.$store.search` in a Vue instance and available methods are:
+`VuexSearch` instance can be accessed through `search` attribute of `store`. Thus, in a Vue instance it is accessed through `this.$store.search`. Available methods are:
 
-#### `registerResource(resourceName, config)`
+#### `registerResource(resourceName, options: IndexOptions)`
 
-* `config: Object`: A list of options for indexing resource. Currently available options are:
-  * `index: string[]`: List of fields to be indexed.
-  * `getter: (state) => resource`: Getter function to access the resource from root state and to watch.
-  * `searchApi: SearchApi` (optional): [Custom search index.](#customizing-search-index) If defined, it is used instead of the shared `searchApi` instance.
+* `options: IndexOptions`
+
+  A list of options for indexing resource. [Recall `IndexOptions`.](#indexoptions)
+
+_Note that this method is slightly different from `registerResource` from `mapActions`. Calling this method needs to provide `resourceName`. Whereas, method from `mapActions` has already injected `resourceName` as its first argument._
+
 
 #### `unregisterResource(resourceName)`
 
@@ -232,7 +281,7 @@ Remove outdated resource indexes, and unwatch/unsubscribe any watchers/subscript
 
 ### Changing Base
 
-By default, vuex-search will register its module in `vuexSearch` from root state. To avoid possible clash naming, you can change its base name before defining the plugin in the store through
+By default, vuex-search will register its module in `'vuexSearch/'` from root state. To avoid possible clash naming, you can change its base name before defining the plugin in the store through
 
 ```js
 import { VuexSearch } from 'vuex-search';
