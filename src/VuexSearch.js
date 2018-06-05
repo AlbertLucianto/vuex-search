@@ -36,15 +36,15 @@ class VuexSearch {
     /* eslint-disable-next-line no-param-reassign */
     store.search = this;
 
-    this.initModule();
-    this.initResources(resources);
+    this._initModule();
+    this._initResources(resources);
   }
 
   /**
    * Share map from resourceName to searchApi with actions
    * and register VuexSearch submodule on Vuex Store.
    */
-  initModule() {
+  _initModule() {
     const actions = actionsWithSearch(this._searchMap);
 
     this._store.registerModule(this._base, {
@@ -63,7 +63,7 @@ class VuexSearch {
    * @param {[resourceName: string]: { getter, indexe, watch?, searchApi? }} resources
    *    Options of resources and its index fields, getter, and optional watch and searchApi
    */
-  initResources(resources) {
+  _initResources(resources) {
     Object.entries(resources).forEach(([resourceName, config]) => {
       this.registerResource(resourceName, config);
     });

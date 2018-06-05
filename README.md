@@ -9,7 +9,7 @@
 <a href="https://www.npmjs.com/package/vuex-search"><img src="https://img.shields.io/npm/l/vuex-search.svg" alt="License"></a>
 </p>
 
-Vuex Search is a plugin for searching collections of objects. Search algorithms powered by [js-worker-search](https://github.com/bvaughn/js-worker-search).
+> Vuex Search is a plugin for searching collections of objects. Search algorithms powered by [js-worker-search](https://github.com/bvaughn/js-worker-search).
 
 ## [Demo](https://albertlucianto.github.io/vuex-search)
 
@@ -55,17 +55,15 @@ export default {
 
 #### `searchPlugin(options)`
 
-* `options: Object`: List of options for defining the plugin. Available options are:
+* `options`: List of options for defining the plugin. Available options are:
 
-  * `resources: { [resourceName: String]: IndexOptions }`
+  * __`resources:`__ `{ [resourceName]: IndexOptions }`
 
     Dictionary of `resourceName` and their index options. [See `IndexOptions`.](#indexoptions)
 
-  * `[searchApi]: SearchApi`
+  * __`[searchApi]:`__ `SearchApi`
 
-    If provided, it will be used as default searchApi across resources. [See customizing search index.](#customizing-search-index)
-
-    Default: `new SearchApi()`
+    If provided, it will be used as default searchApi across resources. [See customizing search index.](#customizing-search-index) Default: `new SearchApi()`
 
 ```javascript
 // store/index.js
@@ -96,21 +94,19 @@ const store = new Vuex.Store({
 
 #### `IndexOptions`
 
-* `index: Array<String>`
+* __`index:`__ `Array<String>`
 
   List of fields to be indexed.
 
-* `getter: (state: Object) => Array|Object`
+* __`getter:`__ `(state) => Array|Object`
 
   Getter function to access the resource from root state and to watch.
 
-* `[watch]: Boolean`
+* __`[watch]:`__ `Boolean`
 
-  Whether needs to reindex if resource changes. This option is useful to avoid reindex overhead when the resource frequently changes.
+  Whether needs to reindex if resource changes. This option is useful to avoid reindex overhead when the resource frequently changes. Default: `true`
 
-  Default: `true`
-
-* `[searchApi]: SearchApi`
+* __`[searchApi]:`__ `SearchApi`
 
   [Custom search index.](#customizing-search-index) If defined, it is used instead of the shared `searchApi` instance.
 
@@ -165,7 +161,7 @@ Similar to Vuex helper for mapping attributes, `actionMap` can be either an obje
 
 * `isSearching`
 
-  Mapped state is a `Boolean` indicating whether `searchApi` has resolved its promise of search result.
+  Mapped state indicates whether `searchApi` has resolved its promise of search result.
 
 * `resourceIndex`
 
@@ -179,11 +175,11 @@ Similar to Vuex helper for mapping attributes, `actionMap` can be either an obje
 
 * `reindex`
 
-  Mapped action has signature: `() => void`. To be used when option `watch` is `false`. This action will reindex the resource and automatically re-`search` current text.
+  Mapped action has signature: `() => void`. To be used when option `watch` is `false`. This action will reindex the resource and automatically re-search current text.
 
 * `registerResource`
 
-  Mapped action has signature: `(options: IndexOptions) => void`. This action will dynamically add `resourceName` with options provided. [Recall `IndexOptions`.](#indexoptions)
+  Mapped action has signature: `(options: IndexOptions) => void`. This action will dynamically add `resourceName` with options provided. [See `IndexOptions`.](#indexoptions)
 
   [More about Dynamic Index Registration.](#dynamic-index-registration)
 
@@ -268,9 +264,9 @@ When a module needs to be loaded or registered dynamically, statically defined p
 
 #### `registerResource(resourceName, options: IndexOptions)`
 
-* `options: IndexOptions`
+* __`options:`__ `IndexOptions`
 
-  A list of options for indexing resource. [Recall `IndexOptions`.](#indexoptions)
+  A list of options for indexing resource. [See `IndexOptions`.](#indexoptions)
 
 _Note that this method is slightly different from `registerResource` from `mapActions`. Calling this method needs to provide `resourceName`. Whereas, method from `mapActions` has already injected `resourceName` as its first argument._
 

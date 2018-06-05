@@ -1,20 +1,22 @@
 import { Plugin, Store } from 'vuex';
 import { SearchApi, Resource } from './SearchApi';
 
-export * from './mappers';
-export * from './SearchApi';
-
 export interface ResourceOptions<S> {
   index: string[];
   getter: (state: S) => any;
+  watch: Boolean;
   searchApi?: SearchApi;
 }
 
-export interface VuexSearchOptions<S> {
+export interface PluginOptions<S> {
   resources: { [resourceName: string]: ResourceOptions<S> };
-  searchApi: SearchApi;
+  searchApi?: SearchApi;
 }
 
-declare function vuexSearchPlugin<S>(options: VuexSearchOptions<S>): Plugin<S>;
+declare function vuexSearchPlugin<S>(options: PluginOptions<S>): Plugin<S>;
+
+export * from './mappers';
+export * from './SearchApi';
+export * from './VuexSearch';
 
 export default vuexSearchPlugin;

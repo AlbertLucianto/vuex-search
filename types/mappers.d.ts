@@ -9,6 +9,9 @@ interface MapperWithResourceName<R, T> {
 
 export declare enum actionTypes {
   search,
+  reindex,
+  registerResource,
+  unregisterResource,
 }
 
 export declare enum getterTypes {
