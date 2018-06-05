@@ -1,43 +1,25 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import mapActions, { transformPayload } from 'vuex-search/mapActions';
-import * as actionTypes from 'vuex-search/action-types';
-
-describe('transformPayload', () => {
-  test('should transform payload accordingly', () => {
-    const resourceName = 'test';
-    const args = ['arg1', 'arg2'];
-
-    const searchPayload = transformPayload(resourceName, actionTypes.SEARCH, args);
-    expect(searchPayload).toEqual([{ resourceName, searchString: 'arg1' }]);
-
-    const otherPayload = transformPayload(resourceName, 'anActionType', args);
-    expect(otherPayload).toEqual(args);
-  });
-});
+import mapActions from 'vuex-search/mapActions';
+import { publicApi } from 'vuex-search/VuexSearch';
 
 Vue.use(Vuex);
 
 describe('mapActions', () => {
-  test('should map actions and convert payloads accordingly', () => {
+  test('should map actions, call VuexSearch, and dispatch action', () => {
     const base = 'test';
     const search = jest.fn();
-    const otherMethod = jest.fn();
     const store = new Vuex.Store({});
-    store.search = { _base: base };
+    const mockedVuexSearch = {
+      _base: base,
+      search,
+    };
 
-    store.registerModule(base, {
-      namespaced: true,
-      actions: {
-        [actionTypes.SEARCH]: search,
-        otherMethod,
-      },
-    });
+    store.search = mockedVuexSearch;
 
     const resourceName = 'test';
     const actionMap = {
-      methodOne: actionTypes.SEARCH,
-      methodTwo: 'otherMethod',
+      method: publicApi.search,
     };
 
     const vm = new Vue({
@@ -45,19 +27,19 @@ describe('mapActions', () => {
       methods: mapActions(resourceName, actionMap),
     });
 
-    vm.methodOne('word');
+    vm.method('word');
     expect(search).toBeCalledWith(
-      expect.anything(Object),
-      { resourceName, searchString: 'word' },
-      undefined,
+      resourceName,
+      'word',
     );
+  });
 
-    const payload = { data: 'test' };
-    vm.methodTwo(payload);
-    expect(otherMethod).toBeCalledWith(
-      expect.anything(),
-      payload,
-      undefined,
-    );
+  test('should throw when unknown actionType is mapped', () => {
+    const resourceName = 'test';
+    const actionMap = {
+      method: 'someUnknownMethod',
+    };
+
+    expect(() => mapActions(resourceName, actionMap)).toThrow('unknown');
   });
 });

@@ -3,7 +3,6 @@ import Vuex from 'vuex';
 import { INDEX_MODES } from 'js-worker-search';
 import SearchApi from 'vuex-search/SearchApi';
 import VuexSearch from 'vuex-search/VuexSearch';
-import { SEARCH } from 'vuex-search/action-types';
 
 Vue.use(Vuex);
 
@@ -127,10 +126,7 @@ describe('VuexSearch', () => {
       searchApi.subscribe(resolve);
     });
 
-    store.dispatch(`${vuexSearch._base}/${SEARCH}`, {
-      resourceName: 'documents',
-      searchString: 'One',
-    });
+    vuexSearch.search('documents', 'One');
 
     documentIndex = store.state[vuexSearch._base].documents;
     expect(documentIndex.isSearching).toEqual(true);
@@ -174,10 +170,7 @@ describe('VuexSearch', () => {
       searchApi.subscribe(resolve);
     });
 
-    store.dispatch(`${vuexSearch._base}/${SEARCH}`, {
-      resourceName: 'documents',
-      searchString: 'New',
-    });
+    vuexSearch.search('documents', 'New');
 
     const subscribeCb = jest.fn();
     searchApi.subscribe(subscribeCb);
@@ -237,10 +230,7 @@ describe('VuexSearch', () => {
     expect(vuexSearch._searchMap.contacts).not.toBe(searchApiCustom);
     expect(vuexSearch._searchMap.contacts).toBe(searchApiShared);
 
-    store.dispatch(`${vuexSearch._base}/${SEARCH}`, {
-      resourceName: 'documents',
-      searchString: 'econd',
-    });
+    vuexSearch.search('documents', 'econd');
 
     let subscribeCb = jest.fn();
     searchApiCustom.subscribe(subscribeCb);
@@ -254,10 +244,7 @@ describe('VuexSearch', () => {
     expect(documentIndex.result.length).toEqual(0);
     expect(documentIndex.text).toEqual('econd');
 
-    store.dispatch(`${vuexSearch._base}/${SEARCH}`, {
-      resourceName: 'contacts',
-      searchString: 'econd',
-    });
+    vuexSearch.search('contacts', 'econd');
 
     subscribeCb = jest.fn();
     searchApiShared.subscribe(subscribeCb);
@@ -288,6 +275,7 @@ describe('VuexSearch', () => {
         contacts: {
           index: ['name', 'description'],
           getter: state => state.resources.contacts,
+          watch: false,
         },
       },
       searchApi: searchApiShared,
@@ -298,7 +286,7 @@ describe('VuexSearch', () => {
     expect(documentIndex).not.toBeUndefined();
 
     expect(vuexSearch._unwatchResource.documents instanceof Function).toBe(true);
-    expect(vuexSearch._unwatchResource.contacts instanceof Function).toBe(true);
+    expect(vuexSearch._unwatchResource.contacts).toBeUndefined();
     expect(searchApiCustom._onNextSubscribers.length).toEqual(1);
 
     vuexSearch.unregisterResource('documents');
@@ -311,7 +299,6 @@ describe('VuexSearch', () => {
     expect(searchApiCustom._onNextSubscribers.length).toEqual(0);
 
     vuexSearch.unregisterResource('contacts');
-    expect(vuexSearch._unwatchResource.contacts).toBeUndefined();
     expect(vuexSearch._searchMap.contacts).toBeUndefined();
     // Ensure searchApi itself is not deleted
     expect(searchApiShared).not.toBeUndefined();
@@ -344,6 +331,60 @@ describe('VuexSearch', () => {
 
     vuexSearch.unregisterResource('contacts');
     expect(searchApi._onNextSubscribers.length).toEqual(0);
+  });
+
+  test('should not auto reindex if set watch to false', async (done) => {
+    const searchApi = new SearchApi();
+    const vuexSearch = getPlugin({
+      resources: {
+        documents: {
+          index: ['name', 'description'],
+          getter: state => state.resources.documents,
+          watch: false,
+        },
+      },
+      searchApi,
+    });
+
+    const store = vuexSearch._store;
+    let documentIndex = store.state[vuexSearch._base].documents;
+    expect(documentIndex).not.toBeUndefined();
+
+    await new Promise((resolve) => {
+      searchApi.subscribe(resolve);
+    });
+
+    store.commit(mutationTypes.EDIT_VALUE, {
+      resourcePath: ['resources', 'documents', 0],
+      key: 'name',
+      value: 'Five',
+    });
+
+    Vue.nextTick(async () => {
+      vuexSearch.search('documents', 'Five');
+
+      await new Promise((resolve) => {
+        searchApi.subscribe(resolve);
+      });
+
+      documentIndex = store.state[vuexSearch._base].documents;
+      expect(documentIndex.isSearching).toEqual(false);
+      expect(documentIndex.result.length).toEqual(0);
+      expect(documentIndex.text).toEqual('Five');
+
+      vuexSearch.reindex('documents');
+
+      await new Promise((resolve) => {
+        searchApi.subscribe(resolve);
+      });
+
+      documentIndex = store.state[vuexSearch._base].documents;
+      expect(documentIndex.isSearching).toEqual(false);
+      expect(documentIndex.result.length).toEqual(1);
+      expect(documentIndex.text).toEqual('Five');
+
+      done();
+    });
   });
 
   test('should use new base name before plugin definition', () => {
