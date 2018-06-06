@@ -11,7 +11,9 @@
 
 > Vuex Search is a plugin for searching collections of objects. Search algorithms powered by [js-worker-search](https://github.com/bvaughn/js-worker-search).
 
-## [Demo](https://albertlucianto.github.io/vuex-search)
+<p align="center"><img width="800" src="./web/assets/vuex-search-icons.png" alt="Vuex Search"></p>
+
+## See working example [here](https://albertlucianto.github.io/vuex-search).
 
 ## Installation:
 
@@ -55,7 +57,7 @@ export default {
 
 #### `searchPlugin(options)`
 
-* `options`: List of options for defining the plugin. Available options are:
+* __`options`__: List of options for defining the plugin. Available options are:
 
   * __`resources:`__ `{ [resourceName]: IndexOptions }`
 
@@ -104,7 +106,7 @@ const store = new Vuex.Store({
 
 * __`[watch]:`__ `Boolean`
 
-  Whether needs to reindex if resource changes. This option is useful to avoid reindex overhead when the resource frequently changes. Default: `true`
+  Whether needs to reindex if resource changes. This option is useful to avoid reindex overhead when the resource frequently changes. Reindexing can be done by [mapping action `reindex`.](#mapactions(resourcename,-actionmap)) Default: `true`
 
 * __`[searchApi]:`__ `SearchApi`
 
@@ -155,37 +157,37 @@ Similar to Vuex helper for mapping attributes, `actionMap` can be either an obje
 
 #### `getterTypes`
 
-* `result`
+* __`result`__
 
   Mapped state is an array of ids.
 
-* `isSearching`
+* __`isSearching`__
 
   Mapped state indicates whether `searchApi` has resolved its promise of search result.
 
-* `resourceIndex`
+* __`resourceIndex`__
 
   Full state of resource index: `result`, `isSearching`, and current search `text`.
 
 #### `actionTypes`
 
-* `search`
+* __`search`__
 
-  Mapped action has signature: `(query: String) => void`.
+  Mapped action's function signature: `(query: String) => void`.
 
-* `reindex`
+* __`reindex`__
 
-  Mapped action has signature: `() => void`. To be used when option `watch` is `false`. This action will reindex the resource and automatically re-search current text.
+  Mapped action's function signature: `() => void`. To be used when option `watch` is `false`. This action will reindex the resource and automatically re-search current text.
 
-* `registerResource`
+* __`registerResource`__
 
-  Mapped action has signature: `(options: IndexOptions) => void`. This action will dynamically add `resourceName` with options provided. [See `IndexOptions`.](#indexoptions)
+  Mapped action's function signature: `(options: IndexOptions) => void`. This action will dynamically add `resourceName` with options provided. [See `IndexOptions`.](#indexoptions)
 
   [More about Dynamic Index Registration.](#dynamic-index-registration)
 
-* `unregisterResource`
+* __`unregisterResource`__
 
-  Mapped action has signature: `() => void`. This action will unwatch and remove `resourceName` index.
+  Mapped action's function signature: `() => void`. This action will unwatch and remove `resourceName` index.
 
 ### Customizing Search Index
 

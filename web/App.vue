@@ -9,7 +9,7 @@
         Search algorithms powered by <a href="https://github.com/bvaughn/js-worker-search">js-worker-search.</a>
       </p>
       <h3 class="info__header">Installation</h3>
-      <pre class="info__preformat">npm i vuex-search</pre>
+      <pre class="info__preformat">npm install --save vuex-search</pre>
       <h3 class="info__header">Usage</h3>
       <p class="info__description">Please read the documentation
         <a href="https://github.com/AlbertLucianto/vuex-search/blob/master/README.md">here.</a>
