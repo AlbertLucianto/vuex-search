@@ -1,4 +1,4 @@
-<p align="center"><a href="https://albertlucianto.github.io/vuex-search" target="_blank" rel="noopener noreferrer"><img width="800" src="./web/assets/vuex-search-header.png" alt="Vuex Search"></a></p>
+<p align="center"><a href="https://albertlucianto.github.io/vuex-search" target="_blank" rel="noopener noreferrer"><img width="900" src="./web/assets/vuex-search-header.png" alt="Vuex Search"></a></p>
 
 <p align="center">
 <a href="https://codecov.io/github/AlbertLucianto/vuex-search?branch=master"><img src="https://img.shields.io/codecov/c/github/AlbertLucianto/vuex-search/master.svg" alt="Coverage Status"></a>
@@ -11,7 +11,7 @@
 
 > Vuex Search is a plugin for searching collections of objects. Search algorithms powered by [js-worker-search](https://github.com/bvaughn/js-worker-search).
 
-<p align="center"><img width="800" src="./web/assets/vuex-search-icons.png" alt="Vuex Search"></p>
+<p align="center"><img width="900" src="./web/assets/vuex-search_icons.png" alt="Vuex Search"></p>
 
 ## See working example [here](https://albertlucianto.github.io/vuex-search).
 
