@@ -1,12 +1,28 @@
 # Changelog
 
+# 2.2.0
+
+_No breaking changes in this update._
+
+## Added Watch Options
+
+* `[watch]: boolean|WatchOptions`
+
+  Now reindex on resource changes can be debounced.
+
+  __`WatchOptions`__
+
+  * __`[delay]:`__ `number`
+
+    If provided, reindex will be debounced with specified delay.
+
 # 2.1.0
 
 _No breaking changes in this update._
 
 ## Added new resource index option
 
-* `[watch]: Boolean`
+* `[watch]: boolean`
 
   Whether needs to reindex if resource changes. This option is useful to avoid reindex overhead when the resource frequently changes.
 

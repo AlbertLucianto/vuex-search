@@ -86,6 +86,8 @@ const store = new Vuex.Store({
           index: ['address', 'name'],
           // access the state to be watched by Vuex Search
           getter: state => state.myResources.contacts,
+          // how resource should be watched
+          watch: { delay: 500 },
         },
         // otherResource: { index, getter, watch, searchApi },
       },
@@ -96,17 +98,25 @@ const store = new Vuex.Store({
 
 #### `IndexOptions`
 
-* __`index:`__ `Array<String>`
+* __`index:`__ `Array<string>`
 
   List of fields to be indexed.
 
-* __`getter:`__ `(state) => Array|Object`
+* __`getter:`__ `(state) => Array<object>|object`
 
   Getter function to access the resource from root state and to watch.
 
-* __`[watch]:`__ `Boolean`
+* __`[watch]:`__ `boolean|WatchOptions`
 
-  Whether needs to reindex if resource changes. This option is useful to avoid reindex overhead when the resource frequently changes. Reindexing can be done by [mapping action `reindex`.](#mapactions(resourcename,-actionmap)) Default: `true`
+  Whether needs to or delay reindex if resource changes. This option is useful to avoid reindex overhead when the resource frequently changes. Reindexing can be done by [mapping action `reindex`.](#mapactions(resourcename,-actionmap))
+
+  __`WatchOptions`__
+
+  * __`[delay]:`__ `number`
+
+    If provided, reindex will be debounced with specified delay.
+  
+  Default: `true`
 
 * __`[searchApi]:`__ `SearchApi`
 
@@ -173,7 +183,7 @@ Similar to Vuex helper for mapping attributes, `actionMap` can be either an obje
 
 * __`search`__
 
-  Mapped action's function signature: `(query: String) => void`.
+  Mapped action's function signature: `(query: string) => void`.
 
 * __`reindex`__
 
