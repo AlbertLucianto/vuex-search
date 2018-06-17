@@ -55,3 +55,14 @@ export function cancellablePromiseWrapper(promise) {
     }
   });
 }
+
+export function debounce(fn, delay = 0) {
+  let timeoutId;
+
+  if (delay === 0) return fn;
+
+  return (...args) => {
+    if (timeoutId) clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn(...args), delay);
+  };
+}

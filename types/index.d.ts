@@ -1,10 +1,14 @@
 import { Plugin, Store } from 'vuex';
 import { SearchApi, Resource } from './SearchApi';
 
+interface WatchOptions {
+  delay: number;
+}
+
 export interface ResourceOptions<S> {
   index: string[];
   getter: (state: S) => any;
-  watch: Boolean;
+  watch: boolean|WatchOptions;
   searchApi?: SearchApi;
 }
 

@@ -4,6 +4,7 @@ import actionsWithSearch from './actions';
 import * as actionTypes from './action-types';
 import * as getterTypes from './getter-types';
 import * as mutationTypes from './mutation-types';
+import { debounce } from './utils';
 
 /* eslint-disable no-underscore-dangle */
 
@@ -105,12 +106,20 @@ class VuexSearch {
     this.search(resourceName, initialSearchString);
 
     if (watch) {
-      this._unwatchResource[resourceName] = store.watch(getter, () => {
+      const watchCb = () => {
         const searchString = this._getSearchText(resourceName);
 
         this.reindex(resourceName);
         this.search(resourceName, searchString);
-      }, { deep: true });
+      };
+
+      const { delay = 0 } = watch;
+
+      this._unwatchResource[resourceName] = store.watch(
+        getter,
+        debounce(watchCb, delay),
+        { deep: true },
+      );
     }
   }
 
