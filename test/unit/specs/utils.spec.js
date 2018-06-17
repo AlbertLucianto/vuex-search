@@ -3,6 +3,7 @@ import {
   normalizeNamespaceName,
   modulePathToNamespace,
   cancellablePromiseWrapper,
+  debounce,
 } from 'vuex-search/utils';
 
 describe('normalizeMap', () => {
@@ -123,5 +124,29 @@ describe('cancellablePromiseWrapper', () => {
     });
 
     rejectCb(rejectMessage);
+  });
+
+  test('should debounce function call and forward arguments', (done) => {
+    const fn = jest.fn();
+    const dFn = debounce(fn, 1);
+
+    dFn();
+    dFn('foo');
+    expect(fn).not.toHaveBeenCalled();
+
+    setTimeout(() => {
+      expect(fn).toHaveBeenCalledTimes(1);
+      expect(fn).toHaveBeenLastCalledWith('foo');
+      done();
+    }, 2);
+  });
+
+  test('should immediate if delay is zero', () => {
+    const fn = jest.fn();
+    const dFn = debounce(fn); // delay = 0
+
+    dFn();
+    dFn();
+    expect(fn).toHaveBeenCalledTimes(2);
   });
 });

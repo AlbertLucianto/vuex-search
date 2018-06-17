@@ -387,6 +387,68 @@ describe('VuexSearch', () => {
     });
   });
 
+  test('should delay reindex if set watch delay option', async (done) => {
+    const searchApi = new SearchApi();
+    const vuexSearch = getPlugin({
+      resources: {
+        documents: {
+          index: ['name', 'description'],
+          getter: state => state.resources.documents,
+          /**
+           * delay shouldn't be too fast (e.g. 1)
+           * because execution time itself may exceed that delay
+           * causing fail test.
+           */
+          watch: { delay: 10 },
+        },
+      },
+      searchApi,
+    });
+
+    const store = vuexSearch._store;
+    let documentIndex = store.state[vuexSearch._base].documents;
+    expect(documentIndex).not.toBeUndefined();
+
+    await new Promise((resolve) => {
+      searchApi.subscribe(resolve);
+    });
+
+    store.commit(mutationTypes.EDIT_VALUE, {
+      resourcePath: ['resources', 'documents', 0],
+      key: 'name',
+      value: 'Five',
+    });
+
+    Vue.nextTick(async () => {
+      vuexSearch.search('documents', 'Five');
+
+      await new Promise((resolve) => {
+        searchApi.subscribe(resolve);
+      });
+
+      documentIndex = store.state[vuexSearch._base].documents;
+      expect(documentIndex.isSearching).toEqual(false);
+      expect(documentIndex.result.length).toEqual(0);
+      expect(documentIndex.text).toEqual('Five');
+
+      setTimeout(() => {
+        documentIndex = store.state[vuexSearch._base].documents;
+        expect(documentIndex.isSearching).toEqual(false);
+        expect(documentIndex.result.length).toEqual(0);
+        expect(documentIndex.text).toEqual('Five');
+      }, 5);
+
+      setTimeout(() => {
+        documentIndex = store.state[vuexSearch._base].documents;
+        expect(documentIndex.isSearching).toEqual(false);
+        expect(documentIndex.result.length).toEqual(1);
+        expect(documentIndex.text).toEqual('Five');
+
+        done();
+      }, 20);
+    });
+  });
+
   test('should use new base name before plugin definition', () => {
     const oldBase = VuexSearch.base;
     const newBase = 'newBaseName';
