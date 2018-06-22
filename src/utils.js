@@ -56,6 +56,13 @@ export function cancellablePromiseWrapper(promise) {
   });
 }
 
+/**
+ * Postpone its execution until after wait milliseconds
+ * have elapsed since the last time it was invoked.
+ *
+ * @param {Function} fn Function callback after delay
+ * @param {Number} delay Debounce time
+ */
 export function debounce(fn, delay = 0) {
   let timeoutId;
 

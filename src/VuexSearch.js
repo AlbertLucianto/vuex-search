@@ -80,7 +80,7 @@ class VuexSearch {
    * @param {(state: Object) => Array|Object} getter Function getter
    *    to access resource and to be watched.
    * @param {string[]} index Fields to be indexed.
-   * @param {Boolean} [watch] Whether needs to reindex if resource changes
+   * @param {Boolean|Object} [watch] Options to reindex if resource changes
    * @param {SearchApi} [searchApi] Custom SearchApi for this resource.
    */
   registerResource(resourceName, config) {

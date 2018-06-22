@@ -40,7 +40,7 @@ export default {
       {
         // id is required for each record
         id: '1',
-        address: '06176 Georgiana Points',
+        address: '1 Hacker Way, Menlo Park',
         name: 'Dr. Katrina Stehr',
       },
       {
@@ -69,6 +69,7 @@ export default {
 
 ```javascript
 // store/index.js
+
 import Vue from 'vue';
 import Vuex from 'vuex';
 import searchPlugin from 'vuex-search';

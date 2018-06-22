@@ -2,7 +2,8 @@ import * as mutationTypes from './mutation-types';
 import * as actionTypes from './action-types';
 
 /**
- * Middleware for interacting with the search API
+ * Actions with injected search API mapper.
+ *
  * @param {{ [resourceName: string]: Search }} searchMap mapper of each resources searchApi
  */
 export default function actionsWithSearch(searchMap) {

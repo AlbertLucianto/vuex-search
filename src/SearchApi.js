@@ -1,4 +1,3 @@
-/** @flow */
 import Search from 'js-worker-search';
 import { CancellationError } from 'bluebird';
 import { cancellablePromiseWrapper } from './utils';
