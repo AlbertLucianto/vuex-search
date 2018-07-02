@@ -4,7 +4,7 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 module.exports = {
   devtool: 'source-map',
   entry: {
-    'vuex-search': './src/index.js'
+    'vuex-search': ['babel-polyfill', './src/index.js']
   },
   output: {
     path: path.resolve(__dirname, '../dist/umd'),
