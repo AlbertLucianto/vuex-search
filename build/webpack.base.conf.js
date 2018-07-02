@@ -22,7 +22,7 @@ const createLintingRule = () => ({
 module.exports = {
   context: path.resolve(__dirname, '../'),
   entry: {
-    app: './web/main.js'
+    app: ['babel-polyfill', './web/main.js']
   },
   output: {
     path: config.build.assetsRoot,
