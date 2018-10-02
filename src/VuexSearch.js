@@ -61,7 +61,7 @@ class VuexSearch {
   /**
    * Initialize all resources which are statically defined in store.
    *
-   * @param {[resourceName: string]: { getter, indexe, watch?, searchApi? }} resources
+   * @param {[resourceName: string]: { getter, indexes, watch?, searchApi? }} resources
    *    Options of resources and its index fields, getter, and optional watch and searchApi
    */
   _initResources(resources) {

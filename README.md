@@ -29,6 +29,24 @@ vuex-search searches collections of documents and returns results as an `Array` 
 
 Because of this, __each document must contain an `id` attribute.__
 
+Please note that vuex-search depends on regenerator runtime, you need to either include `transform-runtime` plugin in your babel config,
+
+```json
+{
+  "plugins": [
+    "transform-runtime"
+  ]
+}
+```
+
+or add `babel-polyfill` in your entries (assuming you are using webpack). For example
+
+```js
+module.export = {
+  entries: [ 'babel-polyfill', './src']
+}
+```
+
 ## Examples
 
 ```javascript
