@@ -1,6 +1,5 @@
 import Search from 'js-worker-search';
-import { CancellationError } from 'bluebird';
-import { cancellablePromiseWrapper } from './utils';
+import { cancellablePromiseWrapper, cancellationSymbol } from './utils';
 
 /* eslint-disable no-underscore-dangle */
 
@@ -123,7 +122,7 @@ export default class SubscribableSearchApi {
 
       return result;
     } catch (error) {
-      if (error instanceof CancellationError) return [];
+      if (error === cancellationSymbol) return [];
       this._notifyError(error);
 
       throw error;

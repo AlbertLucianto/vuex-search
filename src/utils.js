@@ -1,5 +1,3 @@
-import CancellablePromise from 'bluebird';
-
 /**
  * Normalize the map
  * normalizeMap([1, 2]) => [ { key: 1, val: 1 }, { key: 2, val: 2 } ]
@@ -37,6 +35,8 @@ export function modulePathToNamespace(modulePath) {
   return normalizeNamespaceName(JSON.stringify(modulePath));
 }
 
+export const cancellationSymbol = Symbol('cancel');
+
 /**
  * Basic Promise does not support promise cancellation.
  * This function wraps the basic promise and returns cancellable one.
@@ -44,9 +44,11 @@ export function modulePathToNamespace(modulePath) {
  * @param {Promise} promise
  */
 export function cancellablePromiseWrapper(promise) {
-  CancellablePromise.config({ cancellation: true });
+  let rej;
 
-  return new CancellablePromise(async (resolve, reject) => {
+  const wrappedPromise = new Promise(async (resolve, reject) => {
+    rej = reject;
+
     try {
       const res = await promise;
       resolve(res);
@@ -54,6 +56,10 @@ export function cancellablePromiseWrapper(promise) {
       reject(e);
     }
   });
+
+  wrappedPromise.cancel = () => rej(cancellationSymbol);
+
+  return wrappedPromise;
 }
 
 /**

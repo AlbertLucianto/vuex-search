@@ -38,7 +38,6 @@
     "types"
   ],
   "dependencies": {
-    "bluebird": "^3.5.1",
     "js-worker-search": "^1.2.1"
   },
   "devDependencies": {
