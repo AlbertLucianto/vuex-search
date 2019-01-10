@@ -2,3 +2,5 @@ coverage:
   parsers:
     javascript:
       enable_partials: yes
+codecov:
+  token: 3c4454bd-6f10-4030-9cee-dae98523d78d
