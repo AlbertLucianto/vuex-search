@@ -4,6 +4,7 @@ import {
   modulePathToNamespace,
   cancellablePromiseWrapper,
   debounce,
+  cancellationSymbol,
 } from 'vuex-search/utils';
 
 describe('normalizeMap', () => {
@@ -124,6 +125,19 @@ describe('cancellablePromiseWrapper', () => {
     });
 
     rejectCb(rejectMessage);
+  });
+
+  test('should reject with cancellationSymbol if cancelled', async (done) => {
+    const promise = new Promise(() => {});
+
+    const cancellable = cancellablePromiseWrapper(promise);
+
+    cancellable.catch((data) => {
+      expect(data).toBe(cancellationSymbol);
+      done();
+    });
+
+    cancellable.cancel();
   });
 
   test('should debounce function call and forward arguments', (done) => {
