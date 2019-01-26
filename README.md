@@ -43,7 +43,7 @@ or add `babel-polyfill` in your entries (assuming you are using webpack). For ex
 
 ```js
 module.export = {
-  entries: [ 'babel-polyfill', './src']
+  entries: ['babel-polyfill', './src']
 }
 ```
 
