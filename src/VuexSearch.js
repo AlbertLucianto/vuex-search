@@ -94,16 +94,11 @@ class VuexSearch {
     this._searchMap[resourceName] = searchApi;
     this._resourceOptions[resourceName] = { getter, index };
 
-    this._searchSubscribeIfNecessary(searchApi, resourceName, ({ result, text }) => {
-      this._store.dispatch(`${namespace}${actionTypes.RECEIVE_RESULT}`, {
-        result, resourceName, text,
-      });
+    this._searchSubscribeIfNecessary(searchApi, resourceName, (payload) => {
+      this._store.dispatch(`${namespace}${actionTypes.RECEIVE_RESULT}`, payload);
     });
 
     this.reindex(resourceName);
-
-    const initialSearchString = this._getSearchText(resourceName);
-    this.search(resourceName, initialSearchString);
 
     if (watch) {
       const watchCb = () => {

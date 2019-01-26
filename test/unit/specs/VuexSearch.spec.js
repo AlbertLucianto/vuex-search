@@ -82,6 +82,10 @@ describe('VuexSearch', () => {
           index: ['name', 'description'],
           getter: state => state.resources.documents,
         },
+        contacts: {
+          index: ['name', 'description'],
+          getter: state => state.resources.contacts,
+        },
       },
       searchApi,
     });
@@ -95,8 +99,11 @@ describe('VuexSearch', () => {
     await new Promise((resolve) => {
       searchApi.subscribe(resolve);
     });
-    expect(subscribeCb).toBeCalledWith(
+    expect(subscribeCb).toHaveBeenCalledWith(
       { result: ['1', '2', '3', '4'], resourceName: 'documents', text: '' },
+    );
+    expect(subscribeCb).toHaveBeenCalledWith(
+      { result: ['1', '2', '3', '4'], resourceName: 'contacts', text: '' },
     );
 
     documentIndex = store.state[vuexSearch._base].documents;
